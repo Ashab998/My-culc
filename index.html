@@ -11,7 +11,7 @@
             --card-bg: #ffffff;
             --text-main: #111827;
             --text-muted: #6b7280;
-            --primary: #10b981; /* Зеленый цвет под твой новый дизайн */
+            --primary: #10b981; 
             --primary-hover: #059669;
             --track-bg: #e5e7eb;
         }
@@ -43,6 +43,7 @@
             margin-bottom: 12px;
             margin-top: 20px;
         }
+        .label-row.first { margin-top: 0; }
         label { font-weight: 600; font-size: 15px; color: var(--text-main); }
         .val-badge {
             background: rgba(16, 185, 129, 0.1);
@@ -52,21 +53,34 @@
             font-weight: 700;
             font-size: 14px;
         }
-        input[type="number"] {
-            width: 100%;
-            padding: 14px;
+        
+        /* Поле ввода цены без рамок для красоты */
+        .price-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
             border: 2px solid var(--track-bg);
             border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            outline: none;
-            box-sizing: border-box;
+            padding: 10px 14px;
             transition: border-color 0.3s ease;
-            color: var(--text-main);
-            background: var(--bg-color);
         }
-        input[type="number"]:focus { border-color: var(--primary); }
-        
+        .price-input-wrapper:focus-within { border-color: var(--primary); }
+        .price-input-wrapper input[type="number"] {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            outline: none;
+        }
+        .price-input-wrapper span {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-left: 5px;
+        }
+
         /* Плавные ползунки */
         input[type="range"] {
             -webkit-appearance: none;
@@ -75,21 +89,30 @@
             background: var(--track-bg);
             border-radius: 5px;
             outline: none;
-            margin: 10px 0;
+            margin: 15px 0 5px 0;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             background: var(--primary);
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
             transition: transform 0.1s;
         }
         input[type="range"]::-webkit-slider-thumb:active {
             transform: scale(1.15);
+        }
+
+        .limits-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: -5px;
+            font-weight: 500;
         }
 
         .card {
@@ -121,8 +144,18 @@
     <h2>🧮 Исламская рассрочка</h2>
     
     <div class="input-group">
-        <label>Цена за наличные (₽)</label>
-        <input type="number" id="price" placeholder="Например: 50000" oninput="calculate()">
+        <div class="label-row first">
+            <label>Цена за наличные</label>
+        </div>
+        <div class="price-input-wrapper">
+            <input type="number" id="price-input" value="50000" oninput="syncPrice('input'); calculate()">
+            <span>₽</span>
+        </div>
+        <input type="range" id="price-slider" min="25000" max="200000" step="1000" value="50000" oninput="syncPrice('slider'); calculate()">
+        <div class="limits-text">
+            <span>25 тыс.</span>
+            <span>200 тыс.</span>
+        </div>
         
         <div class="label-row">
             <label>Срок рассрочки</label>
@@ -145,48 +178,72 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
     
-    // Синхронизация с темой Telegram пользователя
+    // Синхронизация цветов с Telegram
     if (tg.themeParams.bg_color) {
         document.documentElement.style.setProperty('--bg-color', tg.themeParams.secondary_bg_color);
         document.documentElement.style.setProperty('--card-bg', tg.themeParams.bg_color);
         document.documentElement.style.setProperty('--text-main', tg.themeParams.text_color);
-        document.documentElement.style.setProperty('--track-bg', tg.themeParams.hint_color + '33'); // прозрачный трек
-        // Цвет кнопок мы оставляем зеленым под твой стиль, но если хочешь цвет из ТГ, раскомментируй строку ниже:
-        // document.documentElement.style.setProperty('--primary', tg.themeParams.button_color);
+        document.documentElement.style.setProperty('--track-bg', tg.themeParams.hint_color + '33'); 
     }
 
     function formatMoney(amount) {
         return amount.toLocaleString('ru-RU') + ' ₽';
     }
 
-    // Закрашиваем пройденную часть ползунка
+    // Легкая вибрация при движении ползунков (работает на телефонах в ТГ)
+    function triggerHaptic() {
+        if (tg.HapticFeedback) {
+            tg.HapticFeedback.selectionChanged();
+        }
+    }
+
     function updateRangeStyle(slider) {
         const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
         slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`;
+        triggerHaptic(); // Вызываем вибрацию
     }
 
-    // Инициализация ползунков при загрузке
+    // Синхронизация между полем ввода цифр и ползунком цены
+    function syncPrice(source) {
+        let input = document.getElementById('price-input');
+        let slider = document.getElementById('price-slider');
+        
+        if (source === 'slider') {
+            input.value = slider.value;
+        } else {
+            // Если ввели вручную больше/меньше лимитов - ползунок встает на крайние значения, 
+            // но само поле не блокируем, вдруг человек вводит по одной цифре
+            let val = parseInt(input.value) || 0;
+            if (val > 200000) slider.value = 200000;
+            else if (val < 25000) slider.value = 25000;
+            else slider.value = val;
+        }
+        updateRangeStyle(slider);
+    }
+
     window.onload = function() {
+        updateRangeStyle(document.getElementById('price-slider'));
         updateRangeStyle(document.getElementById('months'));
         updateRangeStyle(document.getElementById('dp'));
+        calculate(); // Считаем сразу при открытии
     };
 
     function calculate() {
-        let price = parseInt(document.getElementById('price').value);
+        let price = parseInt(document.getElementById('price-input').value);
         let months = parseInt(document.getElementById('months').value);
         let dpPercent = parseInt(document.getElementById('dp').value);
         let resultsDiv = document.getElementById('results');
 
-        // Обновляем текст бейджиков плавно при движении
         document.getElementById('months-val').innerText = months + ' мес.';
         document.getElementById('dp-val').innerText = dpPercent + '%';
 
-        if (isNaN(price) || price <= 0) {
-            resultsDiv.style.display = 'none';
+        // Проверка лимитов для расчетов
+        if (isNaN(price) || price < 25000) {
+            resultsDiv.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted);">Минимальная сумма рассрочки 25 000 ₽</div>`;
+            resultsDiv.style.display = 'block';
             return;
         }
 
-        // Логика Мурабаха: 4% если без взноса, 3% если со взносом
         let markup = dpPercent === 0 ? 0.04 : 0.03;
         let dpAmount = Math.floor(price * (dpPercent / 100));
         let financed = price - dpAmount;
@@ -195,7 +252,6 @@
 
         let planName = dpPercent === 0 ? 'БЕЗ ВЗНОСА' : `Взнос ${dpPercent}%`;
 
-        // Отрисовка одной адаптивной карточки
         resultsDiv.innerHTML = `
             <div class="card">
                 <h3>Условия: ${planName}</h3>
