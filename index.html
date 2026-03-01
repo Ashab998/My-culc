@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Калькулятор Рассрочки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -11,8 +11,9 @@
             --card-bg: #ffffff;
             --text-main: #111827;
             --text-muted: #6b7280;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
+            --primary: #10b981; /* Зеленый цвет под твой новый дизайн */
+            --primary-hover: #059669;
+            --track-bg: #e5e7eb;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -21,47 +22,97 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         .container {
             max-width: 400px;
             margin: 0 auto;
         }
-        h2 { text-align: center; font-size: 22px; margin-bottom: 20px; }
+        h2 { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; }
         .input-group {
             background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             margin-bottom: 20px;
         }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
-        input[type="number"], input[type="range"] {
-            width: 100%;
-            box-sizing: border-box;
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+        label { font-weight: 600; font-size: 15px; color: var(--text-main); }
+        .val-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
         }
         input[type="number"] {
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--track-bg);
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
             outline: none;
-            transition: border-color 0.2s;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            color: var(--text-main);
+            background: var(--bg-color);
         }
         input[type="number"]:focus { border-color: var(--primary); }
-        .range-val { text-align: center; font-size: 18px; font-weight: bold; color: var(--primary); margin-top: 10px; }
         
-        .results { display: grid; gap: 12px; }
+        /* Плавные ползунки */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--track-bg);
+            border-radius: 5px;
+            outline: none;
+            margin: 10px 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(1.15);
+        }
+
         .card {
             background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border-top: 5px solid var(--primary);
+            animation: fadeIn 0.3s ease-out;
         }
-        .card h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--text-main); }
-        .card .row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
-        .card .row .val { font-weight: bold; }
-        .card .total { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb; font-weight: bold; color: var(--primary); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card h3 { margin: 0 0 15px 0; font-size: 18px; color: var(--text-main); text-align: center; }
+        .card .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; align-items: center;}
+        .card .row .val { font-weight: 700; font-size: 16px; }
+        .card .total { 
+            margin-top: 15px; 
+            padding-top: 15px; 
+            border-top: 2px dashed var(--track-bg); 
+            font-weight: 800; 
+            font-size: 18px; 
+            color: var(--primary); 
+        }
     </style>
 </head>
 <body>
@@ -70,78 +121,90 @@
     <h2>🧮 Исламская рассрочка</h2>
     
     <div class="input-group">
-        <label>Цена товара за наличные (₽)</label>
+        <label>Цена за наличные (₽)</label>
         <input type="number" id="price" placeholder="Например: 50000" oninput="calculate()">
         
-        <label style="margin-top: 20px;">Срок рассрочки: <span id="months-val">6</span> мес.</label>
-        <input type="range" id="months" min="3" max="12" value="6" oninput="updateMonths(); calculate()">
+        <div class="label-row">
+            <label>Срок рассрочки</label>
+            <span class="val-badge" id="months-val">6 мес.</span>
+        </div>
+        <input type="range" id="months" min="3" max="12" value="6" step="1" oninput="updateRangeStyle(this); calculate()">
+
+        <div class="label-row">
+            <label>Первый взнос</label>
+            <span class="val-badge" id="dp-val">30%</span>
+        </div>
+        <input type="range" id="dp" min="0" max="80" value="30" step="5" oninput="updateRangeStyle(this); calculate()">
     </div>
 
-    <div class="results" id="results" style="display: none;">
+    <div id="results" style="display: none;">
         </div>
 </div>
 
 <script>
-    // Интеграция с темой Telegram
     const tg = window.Telegram.WebApp;
-    tg.expand(); // Открываем на весь экран
+    tg.expand();
     
-    // Применяем цвета из темы пользователя Telegram (темная/светлая)
+    // Синхронизация с темой Telegram пользователя
     if (tg.themeParams.bg_color) {
         document.documentElement.style.setProperty('--bg-color', tg.themeParams.secondary_bg_color);
         document.documentElement.style.setProperty('--card-bg', tg.themeParams.bg_color);
         document.documentElement.style.setProperty('--text-main', tg.themeParams.text_color);
-        document.documentElement.style.setProperty('--text-muted', tg.themeParams.hint_color);
-        document.documentElement.style.setProperty('--primary', tg.themeParams.button_color);
-    }
-
-    function updateMonths() {
-        document.getElementById('months-val').innerText = document.getElementById('months').value;
+        document.documentElement.style.setProperty('--track-bg', tg.themeParams.hint_color + '33'); // прозрачный трек
+        // Цвет кнопок мы оставляем зеленым под твой стиль, но если хочешь цвет из ТГ, раскомментируй строку ниже:
+        // document.documentElement.style.setProperty('--primary', tg.themeParams.button_color);
     }
 
     function formatMoney(amount) {
         return amount.toLocaleString('ru-RU') + ' ₽';
     }
 
-    function calcPlan(price, months, dpPercent) {
-        let markup = dpPercent === 0 ? 0.04 : 0.03;
-        let dpAmount = Math.floor(price * (dpPercent / 100));
-        let financed = price - dpAmount;
-        let monthly = Math.floor(((financed * (1 + markup * months)) / months) / 50) * 50;
-        let total = dpAmount + (monthly * months);
-        return { dpAmount, monthly, total };
+    // Закрашиваем пройденную часть ползунка
+    function updateRangeStyle(slider) {
+        const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+        slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`;
     }
+
+    // Инициализация ползунков при загрузке
+    window.onload = function() {
+        updateRangeStyle(document.getElementById('months'));
+        updateRangeStyle(document.getElementById('dp'));
+    };
 
     function calculate() {
         let price = parseInt(document.getElementById('price').value);
         let months = parseInt(document.getElementById('months').value);
+        let dpPercent = parseInt(document.getElementById('dp').value);
         let resultsDiv = document.getElementById('results');
+
+        // Обновляем текст бейджиков плавно при движении
+        document.getElementById('months-val').innerText = months + ' мес.';
+        document.getElementById('dp-val').innerText = dpPercent + '%';
 
         if (isNaN(price) || price <= 0) {
             resultsDiv.style.display = 'none';
             return;
         }
 
-        let plans = [
-            { name: 'БЕЗ ВЗНОСА', dp: 0 },
-            { name: 'Взнос 25%', dp: 25 },
-            { name: 'Взнос 30%', dp: 30 },
-            { name: 'Взнос 50%', dp: 50 }
-        ];
+        // Логика Мурабаха: 4% если без взноса, 3% если со взносом
+        let markup = dpPercent === 0 ? 0.04 : 0.03;
+        let dpAmount = Math.floor(price * (dpPercent / 100));
+        let financed = price - dpAmount;
+        let monthly = Math.floor(((financed * (1 + markup * months)) / months) / 50) * 50;
+        let total = dpAmount + (monthly * months);
 
-        resultsDiv.innerHTML = '';
-        plans.forEach(plan => {
-            let res = calcPlan(price, months, plan.dp);
-            resultsDiv.innerHTML += `
-                <div class="card">
-                    <h3>${plan.name}</h3>
-                    <div class="row"><span>Первый взнос:</span> <span class="val">${formatMoney(res.dpAmount)}</span></div>
-                    <div class="row"><span>Платеж в месяц:</span> <span class="val">${formatMoney(res.monthly)}</span></div>
-                    <div class="row total"><span>Итоговая сумма:</span> <span class="val">${formatMoney(res.total)}</span></div>
-                </div>
-            `;
-        });
-        resultsDiv.style.display = 'grid';
+        let planName = dpPercent === 0 ? 'БЕЗ ВЗНОСА' : `Взнос ${dpPercent}%`;
+
+        // Отрисовка одной адаптивной карточки
+        resultsDiv.innerHTML = `
+            <div class="card">
+                <h3>Условия: ${planName}</h3>
+                <div class="row"><span>Сумма взноса:</span> <span class="val">${formatMoney(dpAmount)}</span></div>
+                <div class="row"><span>Платеж в месяц:</span> <span class="val">${formatMoney(monthly)}</span></div>
+                <div class="row total"><span>Итоговая сумма:</span> <span class="val">${formatMoney(total)}</span></div>
+            </div>
+        `;
+        resultsDiv.style.display = 'block';
     }
 </script>
 </body>
