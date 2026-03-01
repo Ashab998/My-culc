@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Калькулятор Рассрочки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        h2 { text-align: center; font-size: 22px; margin-bottom: 20px; }
+        .input-group {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="number"] {
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus { border-color: var(--primary); }
+        .range-val { text-align: center; font-size: 18px; font-weight: bold; color: var(--primary); margin-top: 10px; }
+        
+        .results { display: grid; gap: 12px; }
+        .card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+        }
+        .card h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--text-main); }
+        .card .row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+        .card .row .val { font-weight: bold; }
+        .card .total { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb; font-weight: bold; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🧮 Исламская рассрочка</h2>
+    
+    <div class="input-group">
+        <label>Цена товара за наличные (₽)</label>
+        <input type="number" id="price" placeholder="Например: 50000" oninput="calculate()">
+        
+        <label style="margin-top: 20px;">Срок рассрочки: <span id="months-val">6</span> мес.</label>
+        <input type="range" id="months" min="3" max="12" value="6" oninput="updateMonths(); calculate()">
+    </div>
+
+    <div class="results" id="results" style="display: none;">
+        </div>
+</div>
+
+<script>
+    // Интеграция с темой Telegram
+    const tg = window.Telegram.WebApp;
+    tg.expand(); // Открываем на весь экран
+    
+    // Применяем цвета из темы пользователя Telegram (темная/светлая)
+    if (tg.themeParams.bg_color) {
+        document.documentElement.style.setProperty('--bg-color', tg.themeParams.secondary_bg_color);
+        document.documentElement.style.setProperty('--card-bg', tg.themeParams.bg_color);
+        document.documentElement.style.setProperty('--text-main', tg.themeParams.text_color);
+        document.documentElement.style.setProperty('--text-muted', tg.themeParams.hint_color);
+        document.documentElement.style.setProperty('--primary', tg.themeParams.button_color);
+    }
+
+    function updateMonths() {
+        document.getElementById('months-val').innerText = document.getElementById('months').value;
+    }
+
+    function formatMoney(amount) {
+        return amount.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function calcPlan(price, months, dpPercent) {
+        let markup = dpPercent === 0 ? 0.04 : 0.03;
+        let dpAmount = Math.floor(price * (dpPercent / 100));
+        let financed = price - dpAmount;
+        let monthly = Math.floor(((financed * (1 + markup * months)) / months) / 50) * 50;
+        let total = dpAmount + (monthly * months);
+        return { dpAmount, monthly, total };
+    }
+
+    function calculate() {
+        let price = parseInt(document.getElementById('price').value);
+        let months = parseInt(document.getElementById('months').value);
+        let resultsDiv = document.getElementById('results');
+
+        if (isNaN(price) || price <= 0) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        let plans = [
+            { name: 'БЕЗ ВЗНОСА', dp: 0 },
+            { name: 'Взнос 25%', dp: 25 },
+            { name: 'Взнос 30%', dp: 30 },
+            { name: 'Взнос 50%', dp: 50 }
+        ];
+
+        resultsDiv.innerHTML = '';
+        plans.forEach(plan => {
+            let res = calcPlan(price, months, plan.dp);
+            resultsDiv.innerHTML += `
+                <div class="card">
+                    <h3>${plan.name}</h3>
+                    <div class="row"><span>Первый взнос:</span> <span class="val">${formatMoney(res.dpAmount)}</span></div>
+                    <div class="row"><span>Платеж в месяц:</span> <span class="val">${formatMoney(res.monthly)}</span></div>
+                    <div class="row total"><span>Итоговая сумма:</span> <span class="val">${formatMoney(res.total)}</span></div>
+                </div>
+            `;
+        });
+        resultsDiv.style.display = 'grid';
+    }
+</script>
+</body>
+</html>
