@@ -54,6 +54,248 @@
             font-size: 14px;
         }
         
+        .price-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
+            border: 2px solid var(--track-bg);
+            border-radius: 12px;
+            padding: 10px 14px;
+            transition: border-color 0.3s ease;
+        }
+        .price-input-wrapper:focus-within { border-color: var(--primary); }
+        .price-input-wrapper input[type="number"] {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            outline: none;
+        }
+        .price-input-wrapper span {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-left: 5px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--track-bg);
+            border-radius: 5px;
+            outline: none;
+            margin: 15px 0 5px 0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(1.15);
+        }
+
+        .limits-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: -5px;
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border-top: 5px solid var(--primary);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card h3 { margin: 0 0 15px 0; font-size: 18px; color: var(--text-main); text-align: center; }
+        .card .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; align-items: center;}
+        .card .row .val { font-weight: 700; font-size: 16px; }
+        .card .total { 
+            margin-top: 15px; 
+            padding-top: 15px; 
+            border-top: 2px dashed var(--track-bg); 
+            font-weight: 800; 
+            font-size: 18px; 
+            color: var(--primary); 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🧮 Исламская рассрочка</h2>
+    
+    <div class="input-group">
+        <div class="label-row first">
+            <label>Цена за наличные</label>
+        </div>
+        <div class="price-input-wrapper">
+            <input type="number" id="price-input" value="50000" oninput="syncPrice('input'); calculate()">
+            <span>₽</span>
+        </div>
+        <input type="range" id="price-slider" min="25000" max="200000" step="1000" value="50000" oninput="syncPrice('slider'); calculate()">
+        <div class="limits-text">
+            <span>25 тыс.</span>
+            <span>200 тыс.</span>
+        </div>
+        
+        <div class="label-row">
+            <label>Срок рассрочки</label>
+            <span class="val-badge" id="months-val">6 мес.</span>
+        </div>
+        <input type="range" id="months" min="3" max="12" value="6" step="1" oninput="updateRangeStyle(this); calculate()">
+
+        <div class="label-row">
+            <label>Первый взнос</label>
+            <span class="val-badge" id="dp-val">30%</span>
+        </div>
+        <input type="range" id="dp" min="0" max="80" value="30" step="5" oninput="handleDpInput(this)">
+    </div>
+
+    <div id="results" style="display: none;">
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    
+    if (tg.themeParams.bg_color) {
+        document.documentElement.style.setProperty('--bg-color', tg.themeParams.secondary_bg_color);
+        document.documentElement.style.setProperty('--card-bg', tg.themeParams.bg_color);
+        document.documentElement.style.setProperty('--text-main', tg.themeParams.text_color);
+        document.documentElement.style.setProperty('--track-bg', tg.themeParams.hint_color + '33'); 
+    }
+
+    function formatMoney(amount) {
+        return amount.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function triggerHaptic() {
+        if (tg.HapticFeedback) {
+            tg.HapticFeedback.selectionChanged();
+        }
+    }
+
+    function updateRangeStyle(slider) {
+        const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+        slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`;
+        triggerHaptic(); 
+    }
+
+    // НОВАЯ МАГИЯ: Функция для прыжка с 0 на 25
+    function handleDpInput(slider) {
+        let val = parseInt(slider.value);
+        
+        // Если значение находится в "мертвой зоне" от 5 до 20
+        if (val > 0 && val < 25) {
+            // Если клиент тянет вправо (больше 10), перекидываем сразу на 25
+            if (val > 10) {
+                slider.value = 25;
+            } else {
+                // Если тянет влево к нулю, кидаем на 0
+                slider.value = 0;
+            }
+        }
+        
+        updateRangeStyle(slider);
+        calculate();
+    }
+
+    function syncPrice(source) {
+        let input = document.getElementById('price-input');
+        let slider = document.getElementById('price-slider');
+        
+        if (source === 'slider') {
+            input.value = slider.value;
+        } else {
+            let val = parseInt(input.value) || 0;
+            if (val > 200000) slider.value = 200000;
+            else if (val < 25000) slider.value = 25000;
+            else slider.value = val;
+        }
+        updateRangeStyle(slider);
+    }
+
+    window.onload = function() {
+        updateRangeStyle(document.getElementById('price-slider'));
+        updateRangeStyle(document.getElementById('months'));
+        updateRangeStyle(document.getElementById('dp'));
+        calculate(); 
+    };
+
+    function calculate() {
+        let price = parseInt(document.getElementById('price-input').value);
+        let months = parseInt(document.getElementById('months').value);
+        let dpPercent = parseInt(document.getElementById('dp').value);
+        let resultsDiv = document.getElementById('results');
+
+        document.getElementById('months-val').innerText = months + ' мес.';
+        document.getElementById('dp-val').innerText = dpPercent + '%';
+
+        if (isNaN(price) || price < 25000) {
+            resultsDiv.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted);">Минимальная сумма рассрочки 25 000 ₽</div>`;
+            resultsDiv.style.display = 'block';
+            return;
+        }
+
+        let markup = dpPercent === 0 ? 0.04 : 0.03;
+        let dpAmount = Math.floor(price * (dpPercent / 100));
+        let financed = price - dpAmount;
+        let monthly = Math.floor(((financed * (1 + markup * months)) / months) / 50) * 50;
+        let total = dpAmount + (monthly * months);
+
+        let planName = dpPercent === 0 ? 'БЕЗ ВЗНОСА' : `Взнос ${dpPercent}%`;
+
+        resultsDiv.innerHTML = `
+            <div class="card">
+                <h3>Условия: ${planName}</h3>
+                <div class="row"><span>Сумма взноса:</span> <span class="val">${formatMoney(dpAmount)}</span></div>
+                <div class="row"><span>Платеж в месяц:</span> <span class="val">${formatMoney(monthly)}</span></div>
+                <div class="row total"><span>Итоговая сумма:</span> <span class="val">${formatMoney(total)}</span></div>
+            </div>
+        `;
+        resultsDiv.style.display = 'block';
+    }
+</script>
+</body>
+</html>
+            margin-bottom: 20px;
+        }
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+        .label-row.first { margin-top: 0; }
+        label { font-weight: 600; font-size: 15px; color: var(--text-main); }
+        .val-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
         /* Поле ввода цены без рамок для красоты */
         .price-input-wrapper {
             display: flex;
