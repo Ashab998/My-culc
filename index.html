@@ -2,277 +2,420 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Калькулятор Рассрочки</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Card Battle TWA</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
         :root {
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --primary: #10b981; 
-            --primary-hover: #059669;
-            --track-bg: #e5e7eb;
+            --bg-dark: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --text-main: #f8fafc;
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        h2 { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; }
-        .input-group {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            margin-bottom: 20px;
-        }
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            margin-top: 20px;
-        }
-        .label-row.first { margin-top: 0; }
-        label { font-weight: 600; font-size: 15px; color: var(--text-main); }
-        .val-badge {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        
-        .price-input-wrapper {
-            display: flex;
-            align-items: center;
-            background: var(--bg-color);
-            border: 2px solid var(--track-bg);
-            border-radius: 12px;
-            padding: 10px 14px;
-            transition: border-color 0.3s ease;
-        }
-        .price-input-wrapper:focus-within { border-color: var(--primary); }
-        .price-input-wrapper input[type="number"] {
-            width: 100%;
-            border: none;
-            background: transparent;
-            font-size: 20px;
-            font-weight: 700;
+
+        body {
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            outline: none;
-        }
-        .price-input-wrapper span {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-left: 5px;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            background: var(--track-bg);
-            border-radius: 5px;
-            outline: none;
-            margin: 15px 0 5px 0;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
-            transition: transform 0.1s;
-        }
-        input[type="range"]::-webkit-slider-thumb:active {
-            transform: scale(1.15);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
         }
 
-        .limits-text {
+        /* Утилиты Glassmorphism */
+        .glass {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        /* Header */
+        header {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: -5px;
-            font-weight: 500;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .stats-badge {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .stats-badge:active { transform: scale(0.95); }
+        .energy { color: var(--accent-yellow); }
+        
+        .player-id {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        .player-id:active { background: rgba(99, 102, 241, 0.4); transform: translateY(2px); }
+
+        /* Main Stage & Card */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            perspective: 1000px; /* Для 3D эффекта */
+        }
+
+        .glow-orb {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            animation: pulse 4s infinite alternate ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.1; }
+            100% { transform: scale(1.2); opacity: 0.3; }
+        }
+
+        .card-container {
+            position: relative;
+            z-index: 2;
+            width: 260px;
+            height: 380px;
+            transform-style: preserve-3d;
+            transition: transform 0.1s;
+            cursor: pointer;
         }
 
         .card {
-            background: var(--card-bg);
-            padding: 20px;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #166534, #064e3b);
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px var(--accent-yellow);
+            display: flex;
+            flex-direction: column;
+            transform: translateZ(30px); /* Выдвигаем карту вперед в 3D */
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .rarity {
+            background: rgba(0,0,0,0.6);
+            color: var(--accent-yellow);
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 900;
+        }
+
+        .power {
+            background: rgba(0,0,0,0.6);
+            color: #60a5fa;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 900;
+        }
+
+        .card-image-box {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-image-box::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .character-name {
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .character-desc {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            text-align: center;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* Кнопка В БОЙ */
+        .btn-battle {
+            margin-top: 40px;
+            background: linear-gradient(to right, #ef4444, #f97316);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding: 16px 40px;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4), inset 0 -4px 0 rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+        }
+
+        .btn-battle:active {
+            transform: scale(0.92) translateY(4px);
+            box-shadow: 0 5px 10px rgba(239, 68, 68, 0.4), inset 0 -1px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Bottom Navigation */
+        nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding: 15px 10px 25px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            border-radius: 24px 24px 0 0;
+            position: relative;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-item.active { color: var(--accent-green); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; }
+
+        .nav-center-btn {
+            position: relative;
+            top: -25px;
+            background: var(--accent-yellow);
+            color: var(--bg-dark);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 900;
+            border: 6px solid var(--bg-dark);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-center-btn:active { transform: scale(0.9); }
+
+        /* Уведомление о кейсе */
+        .case-alert {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(79, 70, 229, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 20px;
             border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border-top: 5px solid var(--primary);
-            animation: fadeIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 90%;
+            max-width: 340px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .card h3 { margin: 0 0 15px 0; font-size: 18px; color: var(--text-main); text-align: center; }
-        .card .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; align-items: center;}
-        .card .row .val { font-weight: 700; font-size: 16px; }
-        .card .total { 
-            margin-top: 15px; 
-            padding-top: 15px; 
-            border-top: 2px dashed var(--track-bg); 
-            font-weight: 800; 
-            font-size: 18px; 
-            color: var(--primary); 
+
+        @keyframes slideUp {
+            0% { transform: translate(-50%, 100px); opacity: 0; }
+            100% { transform: translate(-50%, 0); opacity: 1; }
         }
+
+        .case-btn {
+            background: var(--accent-yellow);
+            color: var(--bg-dark);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+        .case-btn:active { transform: scale(0.9); }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🧮 Исламская рассрочка</h2>
-    
-    <div class="input-group">
-        <div class="label-row first">
-            <label>Цена за наличные</label>
+    <header class="glass">
+        <div>
+            <div class="stats-badge">⚔️ Боев: 142</div>
+            <div class="stats-badge energy">⚡ 5/5</div>
         </div>
-        <div class="price-input-wrapper">
-            <input type="number" id="price-input" value="50000" oninput="syncPrice('input'); calculate()">
-            <span>₽</span>
+        <div>
+            <div class="player-id" onclick="alert('ID скопирован!')">ID: 849201 📋</div>
         </div>
-        <input type="range" id="price-slider" min="25000" max="200000" step="1000" value="50000" oninput="syncPrice('slider'); calculate()">
-        <div class="limits-text">
-            <span>25 тыс.</span>
-            <span>200 тыс.</span>
-        </div>
+    </header>
+
+    <main>
+        <div class="glow-orb"></div>
         
-        <div class="label-row">
-            <label>Срок рассрочки</label>
-            <span class="val-badge" id="months-val">6 мес.</span>
-        </div>
-        <input type="range" id="months" min="3" max="12" value="6" step="1" oninput="updateRangeStyle(this); calculate()">
-
-        <div class="label-row">
-            <label>Первый взнос</label>
-            <span class="val-badge" id="dp-val">30%</span>
-        </div>
-        <input type="range" id="dp" min="0" max="80" value="30" step="5" oninput="handleDpInput(this)">
-    </div>
-
-    <div id="results" style="display: none;">
-    </div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    
-    if (tg.themeParams.bg_color) {
-        document.documentElement.style.setProperty('--bg-color', tg.themeParams.secondary_bg_color);
-        document.documentElement.style.setProperty('--card-bg', tg.themeParams.bg_color);
-        document.documentElement.style.setProperty('--text-main', tg.themeParams.text_color);
-        document.documentElement.style.setProperty('--track-bg', tg.themeParams.hint_color + '33'); 
-    }
-
-    function formatMoney(amount) {
-        return amount.toLocaleString('ru-RU') + ' ₽';
-    }
-
-    function triggerHaptic() {
-        if (tg.HapticFeedback) {
-            tg.HapticFeedback.selectionChanged();
-        }
-    }
-
-    function updateRangeStyle(slider) {
-        const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-        slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`;
-        triggerHaptic(); 
-    }
-
-    // НОВАЯ МАГИЯ: Функция для прыжка с 0 на 25
-    function handleDpInput(slider) {
-        let val = parseInt(slider.value);
-        
-        // Если значение находится в "мертвой зоне" от 5 до 20
-        if (val > 0 && val < 25) {
-            // Если клиент тянет вправо (больше 10), перекидываем сразу на 25
-            if (val > 10) {
-                slider.value = 25;
-            } else {
-                // Если тянет влево к нулю, кидаем на 0
-                slider.value = 0;
-            }
-        }
-        
-        updateRangeStyle(slider);
-        calculate();
-    }
-
-    function syncPrice(source) {
-        let input = document.getElementById('price-input');
-        let slider = document.getElementById('price-slider');
-        
-        if (source === 'slider') {
-            input.value = slider.value;
-        } else {
-            let val = parseInt(input.value) || 0;
-            if (val > 200000) slider.value = 200000;
-            else if (val < 25000) slider.value = 25000;
-            else slider.value = val;
-        }
-        updateRangeStyle(slider);
-    }
-
-    window.onload = function() {
-        updateRangeStyle(document.getElementById('price-slider'));
-        updateRangeStyle(document.getElementById('months'));
-        updateRangeStyle(document.getElementById('dp'));
-        calculate(); 
-    };
-
-    function calculate() {
-        let price = parseInt(document.getElementById('price-input').value);
-        let months = parseInt(document.getElementById('months').value);
-        let dpPercent = parseInt(document.getElementById('dp').value);
-        let resultsDiv = document.getElementById('results');
-
-        document.getElementById('months-val').innerText = months + ' мес.';
-        document.getElementById('dp-val').innerText = dpPercent + '%';
-
-        if (isNaN(price) || price < 25000) {
-            resultsDiv.innerHTML = `<div class="card" style="text-align: center; color: var(--text-muted);">Минимальная сумма рассрочки 25 000 ₽</div>`;
-            resultsDiv.style.display = 'block';
-            return;
-        }
-
-        let markup = dpPercent === 0 ? 0.04 : 0.03;
-        let dpAmount = Math.floor(price * (dpPercent / 100));
-        let financed = price - dpAmount;
-        let monthly = Math.floor(((financed * (1 + markup * months)) / months) / 50) * 50;
-        let total = dpAmount + (monthly * months);
-
-        let planName = dpPercent === 0 ? 'БЕЗ ВЗНОСА' : `Взнос ${dpPercent}%`;
-
-        resultsDiv.innerHTML = `
+        <div class="card-container" id="mainCard">
             <div class="card">
-                <h3>Условия: ${planName}</h3>
-                <div class="row"><span>Сумма взноса:</span> <span class="val">${formatMoney(dpAmount)}</span></div>
-                <div class="row"><span>Платеж в месяц:</span> <span class="val">${formatMoney(monthly)}</span></div>
-                <div class="row total"><span>Итоговая сумма:</span> <span class="val">${formatMoney(total)}</span></div>
+                <div class="card-header">
+                    <span class="rarity">ЭПИЧЕСКАЯ</span>
+                    <span class="power">🛡 120</span>
+                </div>
+                
+                <div class="card-image-box">
+                    <span style="font-size: 4rem;">🦦</span>
+                </div>
+                
+                <div class="character-name">Боевой Мангуст</div>
+                <div class="character-desc">Приятный мультяшный стиль. Этот проворный боец с двумя крепкими лапами не оставит шансов Каменному Бородавочнику!</div>
             </div>
-        `;
-        resultsDiv.style.display = 'block';
-    }
-</script>
+        </div>
+
+        <button class="btn-battle">В БОЙ!</button>
+    </main>
+
+    <div class="case-alert">
+        <span style="font-size: 1.5rem;">🎁</span>
+        <div>
+            <div style="font-weight: 900; font-size: 0.85rem;">Бесплатный кейс!</div>
+            <div style="font-size: 0.7rem; color: #c7d2fe;">Доступен прямо сейчас</div>
+        </div>
+        <button class="case-btn">ОТКРЫТЬ</button>
+    </div>
+
+    <nav>
+        <button class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            Главная
+        </button>
+        <button class="nav-item">
+            <span class="nav-icon">👥</span>
+            Друзья
+        </button>
+        
+        <button class="nav-center-btn">
+            <span style="font-size: 1.5rem; margin-bottom: 2px;">🃏</span>
+            КАРТЫ
+        </button>
+
+        <button class="nav-item" style="position: relative;">
+            <span class="nav-icon">📦</span>
+            Кейсы
+            <span style="position: absolute; top: -2px; right: 10px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid var(--panel-bg);"></span>
+        </button>
+        <button class="nav-item">
+            <span class="nav-icon">🏆</span>
+            Квесты
+        </button>
+    </nav>
+
+    <script>
+        const cardContainer = document.getElementById('mainCard');
+        const card = cardContainer.querySelector('.card');
+
+        // Эффект наклона карты при движении мыши/пальца
+        function handleMove(e) {
+            const rect = cardContainer.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -15; // Максимальный угол наклона 15 град.
+            const rotateY = ((x - centerX) / centerX) * 15;
+
+            cardContainer.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            card.style.boxShadow = `${-rotateY}px ${rotateX}px 30px rgba(0,0,0,0.4), inset 0 0 0 2px var(--accent-yellow)`;
+        }
+
+        function handleLeave() {
+            cardContainer.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+            card.style.boxShadow = `0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px var(--accent-yellow)`;
+        }
+
+        cardContainer.addEventListener('mousemove', handleMove);
+        cardContainer.addEventListener('mouseleave', handleLeave);
+        
+        // Поддержка для мобильных устройств
+        cardContainer.addEventListener('touchmove', handleMove);
+        cardContainer.addEventListener('touchend', handleLeave);
+    </script>
 </body>
 </html>
