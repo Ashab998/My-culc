@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Card Battle TWA</title>
+    <title>МУБАРАКА - Card Battle TWA</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* ИМПОРТ ШРИФТА И БАЗОВЫЕ НАСТРОЙКИ */
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
         :root {
             --bg-dark: #0f172a;
-            --panel-bg: rgba(30, 41, 59, 0.7);
+            --panel-bg: rgba(30, 41, 59, 0.75);
             --glass-border: rgba(255, 255, 255, 0.1);
             --accent-green: #10b981;
             --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
             --text-main: #f8fafc;
         }
 
@@ -36,192 +39,241 @@
                 radial-gradient(circle at 50% 100%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
         }
 
-        /* Утилиты Glassmorphism */
+        /* УТИЛИТЫ GLASSMORPHISM */
         .glass {
             background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--glass-border);
         }
 
-        /* Header */
+        /* АНИМАЦИИ ПЕРЕХОДОВ ЭКРАНОВ */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            animation: fadeScaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        .screen.active {
+            display: flex;
+        }
+        
+        @keyframes fadeScaleIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* HEADER (ШАПКА) */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
+            padding: 15px 20px;
             border-radius: 0 0 24px 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            z-index: 20;
         }
 
+        .stats-col { display: flex; flex-direction: column; gap: 6px; }
+        
         .stats-badge {
             background: rgba(0, 0, 0, 0.4);
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.85rem;
-            font-weight: 700;
-            margin-bottom: 6px;
+            font-weight: 800;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             border: 1px solid rgba(255,255,255,0.05);
-            transition: transform 0.3s ease;
         }
-
-        .stats-badge:active { transform: scale(0.95); }
         .energy { color: var(--accent-yellow); }
         
         .player-id {
             background: rgba(99, 102, 241, 0.2);
             color: #818cf8;
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 900;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             border: 1px solid rgba(99, 102, 241, 0.3);
+            text-align: center;
         }
-        .player-id:active { background: rgba(99, 102, 241, 0.4); transform: translateY(2px); }
+        .player-id:active { transform: scale(0.95); background: rgba(99, 102, 241, 0.4); }
 
-        /* Main Stage & Card */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            perspective: 1000px; /* Для 3D эффекта */
-        }
+        /* --- ЭКРАН 1: ГЛАВНАЯ (MAIN) --- */
+        #screen-main { align-items: center; justify-content: center; padding-bottom: 20px; }
 
         .glow-orb {
             position: absolute;
-            width: 250px;
-            height: 250px;
+            width: 280px; height: 280px;
             background: var(--accent-green);
             border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.2;
+            filter: blur(90px);
+            opacity: 0.25;
             animation: pulse 4s infinite alternate ease-in-out;
             z-index: 1;
         }
-
         @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.1; }
-            100% { transform: scale(1.2); opacity: 0.3; }
+            0% { transform: scale(0.8); opacity: 0.15; }
+            100% { transform: scale(1.2); opacity: 0.35; }
         }
 
+        /* 3D Карточка на главном экране */
         .card-container {
             position: relative;
             z-index: 2;
             width: 260px;
             height: 380px;
-            transform-style: preserve-3d;
-            transition: transform 0.1s;
-            cursor: pointer;
+            perspective: 1000px;
+            margin-bottom: 30px;
         }
 
-        .card {
-            width: 100%;
-            height: 100%;
+        .card-3d {
+            width: 100%; height: 100%;
             background: linear-gradient(145deg, #166534, #064e3b);
             border-radius: 20px;
             padding: 12px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px var(--accent-yellow);
             display: flex;
             flex-direction: column;
-            transform: translateZ(30px); /* Выдвигаем карту вперед в 3D */
-            transition: box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .rarity {
-            background: rgba(0,0,0,0.6);
-            color: var(--accent-yellow);
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 900;
-        }
-
-        .power {
-            background: rgba(0,0,0,0.6);
-            color: #60a5fa;
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 900;
-        }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 10px; transform: translateZ(30px); }
+        .rarity { background: rgba(0,0,0,0.6); color: var(--accent-yellow); font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; font-weight: 900; }
+        .power { background: rgba(0,0,0,0.6); color: #60a5fa; font-size: 0.85rem; padding: 4px 10px; border-radius: 8px; font-weight: 900; }
 
         .card-image-box {
             flex: 1;
             background: rgba(15, 23, 42, 0.8);
             border-radius: 12px;
-            border: 2px solid rgba(16, 185, 129, 0.3);
+            border: 2px solid rgba(16, 185, 129, 0.4);
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 5rem;
+            transform: translateZ(50px);
             position: relative;
+            overflow: hidden;
         }
-
         .card-image-box::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
-            pointer-events: none;
         }
 
-        .character-name {
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
+        .character-info { transform: translateZ(40px); text-align: center; }
+        .character-name { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .character-desc { font-size: 0.75rem; color: #cbd5e1; margin-top: 6px; line-height: 1.4; }
 
-        .character-desc {
-            font-size: 0.75rem;
-            color: #cbd5e1;
-            text-align: center;
-            margin-top: 4px;
-            line-height: 1.4;
-        }
-
-        /* Кнопка В БОЙ */
+        /* Кнопка БОЙ */
         .btn-battle {
-            margin-top: 40px;
             background: linear-gradient(to right, #ef4444, #f97316);
             border: none;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 900;
-            padding: 16px 40px;
+            padding: 18px 50px;
             border-radius: 50px;
-            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4), inset 0 -4px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5), inset 0 -4px 0 rgba(0,0,0,0.2);
             cursor: pointer;
             z-index: 2;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-transform: uppercase;
+            width: 80%;
+            max-width: 320px;
         }
+        .btn-battle:active { transform: scale(0.92) translateY(4px); box-shadow: 0 5px 10px rgba(239, 68, 68, 0.4), inset 0 -1px 0 rgba(0,0,0,0.2); }
 
-        .btn-battle:active {
-            transform: scale(0.92) translateY(4px);
-            box-shadow: 0 5px 10px rgba(239, 68, 68, 0.4), inset 0 -1px 0 rgba(0,0,0,0.2);
+        /* Всплывающее уведомление о кейсе */
+        .case-alert {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(79, 70, 229, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 90%;
+            max-width: 340px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 15;
         }
+        @keyframes slideUp { 0% { transform: translate(-50%, 100px); opacity: 0; } 100% { transform: translate(-50%, 0); opacity: 1; } }
+        .case-btn { background: var(--accent-yellow); color: var(--bg-dark); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; margin-left: auto; transition: transform 0.2s; }
+        .case-btn:active { transform: scale(0.9); }
 
-        /* Bottom Navigation */
+        /* --- ЭКРАН 2: КОЛЛЕКЦИЯ КАРТ (ПЛАВНЫЙ СВАЙП) --- */
+        #screen-cards { justify-content: flex-start; padding-top: 20px; }
+        .collection-title { text-align: center; font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .collection-subtitle { text-align: center; font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px; }
+        
+        .card-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px calc(50vw - 125px); /* Центрирует карты (250px / 2) */
+            gap: 30px;
+            flex: 1;
+            align-items: center;
+        }
+        .card-carousel::-webkit-scrollbar { display: none; }
+
+        .playing-card {
+            flex: 0 0 250px;
+            height: 380px;
+            scroll-snap-align: center;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 2px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, border-color 0.3s;
+            position: relative;
+        }
+        .playing-card.epic { border-color: var(--accent-green); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.2); }
+        .playing-card.legendary { border-color: var(--accent-yellow); box-shadow: 0 15px 35px rgba(245, 158, 11, 0.2); background: linear-gradient(145deg, #451a03, #1e293b); }
+        
+        .card-carousel-img {
+            flex: 1;
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            margin: 10px 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4.5rem;
+        }
+        
+        .select-card-btn {
+            margin-top: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+        .playing-card.selected .select-card-btn { background: var(--accent-green); border-color: var(--accent-green); color: #000; }
+
+        /* --- НАВИГАЦИЯ (BOTTOM NAV) --- */
         nav {
             display: flex;
             justify-content: space-around;
@@ -232,144 +284,98 @@
             border-top: 1px solid var(--glass-border);
             border-radius: 24px 24px 0 0;
             position: relative;
+            z-index: 20;
         }
 
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-transform: uppercase;
+            display: flex; flex-direction: column; align-items: center;
+            color: #64748b; text-decoration: none; font-size: 0.65rem; font-weight: 900;
+            text-transform: uppercase; background: none; border: none; cursor: pointer;
             transition: color 0.3s;
-            background: none;
-            border: none;
-            cursor: pointer;
+            width: 20%;
         }
-
         .nav-item.active { color: var(--accent-green); }
-        .nav-icon { font-size: 24px; margin-bottom: 4px; }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s; }
+        .nav-item:active .nav-icon { transform: scale(0.8); }
 
         .nav-center-btn {
             position: relative;
             top: -25px;
             background: var(--accent-yellow);
             color: var(--bg-dark);
-            width: 64px;
-            height: 64px;
+            width: 64px; height: 64px;
             border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 900;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 900;
             border: 6px solid var(--bg-dark);
             box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
-            transition: transform 0.2s;
-            cursor: pointer;
+            transition: transform 0.2s; cursor: pointer;
         }
-
         .nav-center-btn:active { transform: scale(0.9); }
-
-        /* Уведомление о кейсе */
-        .case-alert {
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(79, 70, 229, 0.9);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px 20px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            width: 90%;
-            max-width: 340px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 5;
-        }
-
-        @keyframes slideUp {
-            0% { transform: translate(-50%, 100px); opacity: 0; }
-            100% { transform: translate(-50%, 0); opacity: 1; }
-        }
-
-        .case-btn {
-            background: var(--accent-yellow);
-            color: var(--bg-dark);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 900;
-            font-size: 0.75rem;
-            cursor: pointer;
-            margin-left: auto;
-            transition: transform 0.2s;
-        }
-        .case-btn:active { transform: scale(0.9); }
-
     </style>
 </head>
 <body>
 
     <header class="glass">
-        <div>
-            <div class="stats-badge">⚔️ Боев: 142</div>
-            <div class="stats-badge energy">⚡ 5/5</div>
+        <div class="stats-col">
+            <div class="stats-badge" id="battleCounter">⚔️ Боев: 0</div>
+            <div class="stats-badge energy">⚡ Энергия: 5/5</div>
         </div>
-        <div>
-            <div class="player-id" onclick="alert('ID скопирован!')">ID: 849201 📋</div>
+        <div class="stats-col" style="align-items: flex-end;">
+            <div class="player-id" onclick="copyRefLink()" id="userIdDisplay">ID: Загрузка...<br><span style="font-size: 0.6rem; color: #a5b4fc;">Нажми, чтобы пригласить</span></div>
         </div>
     </header>
 
-    <main>
+    <main id="screen-main" class="screen active">
         <div class="glow-orb"></div>
         
-        <div class="card-container" id="mainCard">
-            <div class="card">
+        <div class="card-container" id="mainCardContainer">
+            <div class="card-3d" id="mainCard">
                 <div class="card-header">
-                    <span class="rarity">ЭПИЧЕСКАЯ</span>
-                    <span class="power">🛡 120</span>
+                    <span class="rarity" id="mainRarity">ЭПИЧЕСКАЯ</span>
+                    <span class="power" id="mainPower">🛡 120</span>
                 </div>
                 
-                <div class="card-image-box">
-                    <span style="font-size: 4rem;">🦦</span>
-                </div>
+                <div class="card-image-box" id="mainEmoji">🦦</div>
                 
-                <div class="character-name">Боевой Мангуст</div>
-                <div class="character-desc">Приятный мультяшный стиль. Этот проворный боец с двумя крепкими лапами не оставит шансов Каменному Бородавочнику!</div>
+                <div class="character-info">
+                    <div class="character-name" id="mainName">Боевой Мангуст</div>
+                    <div class="character-desc" id="mainDesc">Приятный мультяшный стиль. Этот проворный боец с двумя крепкими лапами готов к бою!</div>
+                </div>
             </div>
         </div>
 
-        <button class="btn-battle">В БОЙ!</button>
+        <button class="btn-battle" onclick="startBattle()">В БОЙ!</button>
+
+        <div class="case-alert" id="caseAlert">
+            <span style="font-size: 1.8rem;">🎁</span>
+            <div style="flex: 1;">
+                <div style="font-weight: 900; font-size: 0.9rem;">Бесплатный кейс!</div>
+                <div style="font-size: 0.75rem; color: #c7d2fe;">За друга или ежедневный</div>
+            </div>
+            <button class="case-btn" onclick="openCase()">ОТКРЫТЬ</button>
+        </div>
     </main>
 
-    <div class="case-alert">
-        <span style="font-size: 1.5rem;">🎁</span>
-        <div>
-            <div style="font-weight: 900; font-size: 0.85rem;">Бесплатный кейс!</div>
-            <div style="font-size: 0.7rem; color: #c7d2fe;">Доступен прямо сейчас</div>
-        </div>
-        <button class="case-btn">ОТКРЫТЬ</button>
-    </div>
+    <main id="screen-cards" class="screen">
+        <h2 class="collection-title">Твоя Колода</h2>
+        <p class="collection-subtitle">Свайпай вправо и влево для просмотра</p>
+        
+        <div class="card-carousel" id="cardsContainer">
+            </div>
+    </main>
 
     <nav>
-        <button class="nav-item active">
-            <span class="nav-icon">🏠</span>
-            Главная
+        <button class="nav-item active" onclick="switchScreen('main', this)">
+            <span class="nav-icon">⚔️</span>
+            Арена
         </button>
         <button class="nav-item">
             <span class="nav-icon">👥</span>
             Друзья
         </button>
         
-        <button class="nav-center-btn">
+        <button class="nav-center-btn" onclick="switchScreen('cards', this)">
             <span style="font-size: 1.5rem; margin-bottom: 2px;">🃏</span>
             КАРТЫ
         </button>
@@ -377,7 +383,7 @@
         <button class="nav-item" style="position: relative;">
             <span class="nav-icon">📦</span>
             Кейсы
-            <span style="position: absolute; top: -2px; right: 10px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid var(--panel-bg);"></span>
+            <span style="position: absolute; top: 0; right: 10px; width: 10px; height: 10px; background: var(--accent-red); border-radius: 50%; border: 2px solid var(--panel-bg);"></span>
         </button>
         <button class="nav-item">
             <span class="nav-icon">🏆</span>
@@ -386,10 +392,126 @@
     </nav>
 
     <script>
-        const cardContainer = document.getElementById('mainCard');
-        const card = cardContainer.querySelector('.card');
+        // 1. Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем на весь экран
+        tg.ready();
 
-        // Эффект наклона карты при движении мыши/пальца
+        // Получаем данные игрока (с fallback для тестов в браузере)
+        const user = tg.initDataUnsafe?.user || { id: '849201', username: 'MubarakaPlayer' };
+        let battlesPlayed = 142; // Тестовое значение
+        
+        // Обновляем UI данными игрока
+        document.getElementById('userIdDisplay').innerHTML = `ID: ${user.id}<br><span style="font-size: 0.6rem; color: #a5b4fc;">Нажми, чтобы пригласить</span>`;
+        document.getElementById('battleCounter').innerText = `⚔️ Боев: ${battlesPlayed}`;
+
+        // 2. База карт игрока (Моковые данные для фронтенда)
+        const myCards = [
+            { 
+                id: 'mongoose_01', 
+                name: 'Боевой Ядовитый Мангуст', 
+                power: 120, 
+                desc: 'Приятный мультяшный стиль. Этот проворный боец с двумя крепкими лапами не оставит шансов врагам.', 
+                type: 'legendary', 
+                emoji: '🦦' 
+            },
+            { 
+                id: 'warthog_01', 
+                name: 'Каменный Бородавочник', 
+                power: 80, 
+                desc: 'Непробиваемая каменная защита. Отличный танк для длительных сражений.', 
+                type: 'epic', 
+                emoji: '🐗' 
+            },
+            { 
+                id: 'wolf_base', 
+                name: 'Степной Волк', 
+                power: 45, 
+                desc: 'Базовый боец. Быстрый, но уязвимый.', 
+                type: 'common', 
+                emoji: '🐺' 
+            }
+        ];
+
+        let selectedCard = myCards[0]; // По умолчанию выбран Мангуст
+
+        // 3. Логика переключения экранов
+        function switchScreen(screenName, btnElement) {
+            // Скрываем все экраны
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Убираем активность со всех кнопок (кроме центральной)
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            
+            // Показываем нужный экран
+            document.getElementById(`screen-${screenName}`).classList.add('active');
+            
+            if(btnElement.classList.contains('nav-item')) {
+                btnElement.classList.add('active');
+            }
+            
+            // Скрываем уведомление о кейсе в коллекции, чтобы не мешало
+            const alert = document.getElementById('caseAlert');
+            if(screenName === 'cards') {
+                alert.style.display = 'none';
+                renderCollection(); // Рендерим карты при входе в коллекцию
+            } else {
+                alert.style.display = 'flex';
+                updateMainCardUI(); // Обновляем главную карту
+            }
+        }
+
+        // 4. Рендер коллекции карт (Карусель)
+        function renderCollection() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = myCards.map(card => `
+                <div class="playing-card ${card.type} ${selectedCard.id === card.id ? 'selected' : ''}" onclick="selectCard('${card.id}')">
+                    <div style="display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 10px;">
+                        <span class="rarity">${card.type === 'legendary' ? 'ЛЕГЕНДА' : card.type === 'epic' ? 'ЭПИК' : 'БАЗА'}</span>
+                        <span class="power" style="color: ${card.type === 'legendary' ? '#f59e0b' : '#60a5fa'}">🛡 ${card.power}</span>
+                    </div>
+                    <div class="card-carousel-img">${card.emoji}</div>
+                    <div class="character-name" style="font-size: 1.1rem;">${card.name}</div>
+                    <div class="character-desc">${card.desc}</div>
+                    <button class="select-card-btn">${selectedCard.id === card.id ? 'Выбрана' : 'Выбрать'}</button>
+                </div>
+            `).join('');
+        }
+
+        // 5. Выбор карты из коллекции
+        function selectCard(cardId) {
+            selectedCard = myCards.find(c => c.id === cardId);
+            renderCollection(); // Перерисовываем, чтобы обновить кнопку "Выбрана"
+            tg.HapticFeedback.selectionChanged(); // Вибрация в Telegram
+        }
+
+        // 6. Обновление Главной Карты
+        function updateMainCardUI() {
+            document.getElementById('mainName').innerText = selectedCard.name;
+            document.getElementById('mainDesc').innerText = selectedCard.desc;
+            document.getElementById('mainPower').innerText = `🛡 ${selectedCard.power}`;
+            document.getElementById('mainEmoji').innerText = selectedCard.emoji;
+            
+            const rarityEl = document.getElementById('mainRarity');
+            rarityEl.innerText = selectedCard.type === 'legendary' ? 'ЛЕГЕНДА' : selectedCard.type === 'epic' ? 'ЭПИК' : 'БАЗА';
+            
+            // Меняем стили 3D карты в зависимости от редкости
+            const cardEl = document.getElementById('mainCard');
+            if (selectedCard.type === 'legendary') {
+                cardEl.style.background = 'linear-gradient(145deg, #451a03, #1e293b)';
+                cardEl.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px #f59e0b';
+            } else if (selectedCard.type === 'epic') {
+                cardEl.style.background = 'linear-gradient(145deg, #166534, #064e3b)';
+                cardEl.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px #10b981';
+            } else {
+                cardEl.style.background = 'linear-gradient(145deg, #1e293b, #0f172a)';
+                cardEl.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px #64748b';
+            }
+        }
+
+        // 7. Эффект 3D Наклона Главной Карты (Mouse & Touch)
+        const cardContainer = document.getElementById('mainCardContainer');
+        const card3D = document.getElementById('mainCard');
+
         function handleMove(e) {
             const rect = cardContainer.getBoundingClientRect();
             const x = (e.clientX || e.touches[0].clientX) - rect.left;
@@ -398,24 +520,48 @@
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
             
-            const rotateX = ((y - centerY) / centerY) * -15; // Максимальный угол наклона 15 град.
-            const rotateY = ((x - centerX) / centerX) * 15;
+            const rotateX = ((y - centerY) / centerY) * -12; // Макс угол 12 градусов
+            const rotateY = ((x - centerX) / centerX) * 12;
 
-            cardContainer.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            card.style.boxShadow = `${-rotateY}px ${rotateX}px 30px rgba(0,0,0,0.4), inset 0 0 0 2px var(--accent-yellow)`;
+            card3D.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         }
 
         function handleLeave() {
-            cardContainer.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-            card.style.boxShadow = `0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px var(--accent-yellow)`;
+            card3D.style.transform = `rotateX(0deg) rotateY(0deg)`;
         }
 
         cardContainer.addEventListener('mousemove', handleMove);
         cardContainer.addEventListener('mouseleave', handleLeave);
-        
-        // Поддержка для мобильных устройств
         cardContainer.addEventListener('touchmove', handleMove);
         cardContainer.addEventListener('touchend', handleLeave);
+
+        // 8. Игровые действия
+        function startBattle() {
+            tg.HapticFeedback.impactOccurred('heavy'); // Сильная вибрация
+            
+            // Эмуляция боя
+            battlesPlayed++;
+            document.getElementById('battleCounter').innerText = `⚔️ Боев: ${battlesPlayed}`;
+            
+            tg.showAlert(`Ты отправил бойца "${selectedCard.name}" в бой! Ожидание противника...`);
+        }
+
+        function copyRefLink() {
+            const link = `https://t.me/mubaraka_bot?start=ref_${user.id}`;
+            
+            // Копируем в буфер обмена
+            navigator.clipboard.writeText(link).then(() => {
+                tg.HapticFeedback.notificationOccurred('success');
+                tg.showAlert('Ссылка скопирована! Отправь её другу и получи кейс, когда он зайдет.');
+            });
+        }
+
+        function openCase() {
+            tg.HapticFeedback.impactOccurred('medium');
+            document.getElementById('caseAlert').style.display = 'none';
+            tg.showAlert('Кейс открывается... Вы получили: Степной Волк (База)!');
+        }
+
     </script>
 </body>
 </html>
