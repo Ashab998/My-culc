@@ -10,7 +10,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
-            /* Light Theme Defaults */
             --bg-body: #f4f6f9;
             --card-bg: #ffffff;
             --text-main: #0f172a;
@@ -36,54 +35,27 @@
             transition: background-color 0.3s;
         }
         
-        .container { max-width: 480px; margin: 0 auto; padding-bottom: 90px; }
+        .container { max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
 
         /* HEADER & LANG TOGGLE */
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header-top h2 { margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
-        .lang-toggle {
-            background: var(--track-bg);
-            padding: 4px;
-            border-radius: 8px;
-            display: flex;
-            gap: 4px;
-        }
-        .lang-btn {
-            padding: 4px 8px;
-            font-size: 13px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: all 0.2s;
-        }
+        .lang-toggle { background: var(--track-bg); padding: 4px; border-radius: 8px; display: flex; gap: 4px; }
+        .lang-btn { padding: 4px 8px; font-size: 13px; font-weight: 700; border-radius: 6px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
         .lang-btn.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         /* HALAL BADGE */
         .halal-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(5, 150, 105, 0.1);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            cursor: pointer;
-            border: 1px solid rgba(5, 150, 105, 0.2);
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(5, 150, 105, 0.1); color: var(--primary);
+            padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700;
+            margin-bottom: 20px; cursor: pointer; border: 1px solid rgba(5, 150, 105, 0.2);
+            transition: transform 0.1s;
         }
+        .halal-badge:active { transform: scale(0.96); }
 
         /* TABS */
-        .tabs-container {
-            background: var(--track-bg); padding: 4px; border-radius: 12px; display: flex; margin-bottom: 24px; position: relative;
-        }
+        .tabs-container { background: var(--track-bg); padding: 4px; border-radius: 12px; display: flex; margin-bottom: 24px; position: relative; }
         .tab { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; z-index: 2; transition: color 0.3s; }
         .tab.active { color: var(--text-main); }
         .tab-slider { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: var(--card-bg); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; }
@@ -100,12 +72,13 @@
         .price-input-wrapper:focus-within { border-color: var(--primary); background: var(--card-bg); }
         .price-input-wrapper input { width: 100%; border: none; background: transparent; font-size: 20px; font-weight: 800; color: var(--text-main); outline: none; font-variant-numeric: tabular-nums; }
         .price-input-wrapper span { font-size: 18px; font-weight: 700; color: var(--text-muted); margin-left: 8px; }
+        
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: var(--track-bg); border-radius: 8px; outline: none; margin: 24px 0 10px 0; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; border: 3px solid var(--primary); cursor: pointer; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
         .limits-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         
         #dp-container { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 200px; opacity: 1; }
-        #dp-container.hidden { max-height: 0; opacity: 0; margin-top: -10px; }
+        #dp-container.hidden { max-height: 0; opacity: 0; margin-top: -10px; pointer-events: none; }
 
         /* REQUIREMENTS */
         .requirements-card { background: linear-gradient(145deg, var(--primary), #047857); color: white; }
@@ -114,9 +87,9 @@
         .requirements-card ul li { position: relative; padding-left: 20px; }
         .requirements-card ul li::before { content: "✓"; position: absolute; left: 0; color: #6ee7b7; font-weight: bold; }
 
-        /* RECEIPT CARD */
+        /* RECEIPT CARD (FOR EXPORT & DISPLAY) */
         .result-card { padding: 0; overflow: hidden; border: 1px solid var(--track-bg); display: none; }
-        .result-header { padding: 24px 24px 16px 24px; background: var(--card-bg); }
+        .result-header { padding: 24px 24px 16px 24px; background: var(--card-bg); border-radius: 20px 20px 0 0; }
         .result-header h3 { margin: 0 0 20px 0; font-size: 18px; color: var(--text-main); }
         .check-row { display: flex; align-items: baseline; margin-bottom: 14px; font-size: 13px; color: var(--text-muted); }
         .check-row.bold { font-size: 14px; color: var(--text-main); font-weight: 700; margin-bottom: 16px; }
@@ -124,20 +97,24 @@
         .check-row .dots { flex-grow: 1; border-bottom: 2px dotted #cbd5e1; margin: 0 12px; position: relative; top: -3px; opacity: 0.6; }
         .check-row .value { white-space: nowrap; font-variant-numeric: tabular-nums; }
         
-        .result-total-zone { background: var(--receipt-bg); padding: 24px; border-top: 2px dashed #cbd5e1; }
+        .result-total-zone { background: var(--receipt-bg); padding: 24px; border-top: 2px dashed #cbd5e1; border-radius: 0 0 20px 20px;}
         .total-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
         .total-price-label { font-size: 16px; font-weight: 700; color: var(--text-muted); }
         .total-price-value { font-size: 24px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
 
-        /* EXTRA FEATURES (Schedule & Export) */
-        .schedule-btn { width: 100%; background: none; border: 1px solid var(--primary); color: var(--primary); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-top: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .schedule-list { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-        .schedule-list.open { max-height: 500px; margin-top: 16px; }
-        .schedule-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--track-bg); font-size: 13px; color: var(--text-main); font-variant-numeric: tabular-nums;}
-        .schedule-item:last-child { border-bottom: none; }
+        /* SCHEDULE */
+        .schedule-btn { width: 100%; background: none; border: 1px solid var(--primary); color: var(--primary); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-top: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: background 0.2s; }
+        .schedule-btn:active { background: rgba(5, 150, 105, 0.1); }
+        .schedule-list { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0, 1, 0, 1); }
+        .schedule-list.open { max-height: 1000px; margin-top: 16px; transition: max-height 0.5s ease-in-out; }
+        .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--track-bg); font-size: 13px; color: var(--text-main); font-variant-numeric: tabular-nums;}
+        .schedule-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .schedule-item.dp-item { font-weight: 700; color: var(--primary); border-bottom: 2px solid var(--track-bg); padding-bottom: 14px; margin-bottom: 6px; }
         
-        .action-buttons { display: flex; gap: 10px; padding: 20px 24px; background: var(--card-bg); border-top: 1px solid var(--track-bg);}
-        .btn-icon { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 13px; border: none; cursor: pointer; }
+        /* ACTION BUTTONS (Hidden during screenshot) */
+        .action-buttons { display: flex; gap: 10px; padding: 20px 24px; background: var(--card-bg); border-top: 1px solid var(--track-bg); border-radius: 0 0 20px 20px;}
+        .btn-icon { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; transition: transform 0.1s;}
+        .btn-icon:active { transform: scale(0.97); }
         .btn-save { background: var(--btn-secondary); color: var(--btn-secondary-text); }
         .btn-whatsapp { background: #25D366; color: white; }
     </style>
@@ -173,10 +150,10 @@
             <label id="t-price-lbl">Стоимость товара</label>
         </div>
         <div class="price-input-wrapper">
-            <input type="number" id="price-input" value="110000" oninput="syncPrice('input'); calculate()" onblur="correctInput('price')">
+            <input type="number" id="price-input" value="110000" oninput="syncPrice('input'); fastUIUpdate()" onblur="correctInput('price')">
             <span id="t-rub1">руб.</span>
         </div>
-        <input type="range" id="price-slider" min="25000" max="200000" step="1000" value="110000" oninput="syncPrice('slider'); calculate()">
+        <input type="range" id="price-slider" min="25000" max="200000" step="1000" value="110000" oninput="syncPrice('slider'); fastUIUpdate()" onchange="calculate()">
         <div class="limits-text">
             <span>25.000</span>
             <span>200.000</span>
@@ -186,7 +163,7 @@
             <label id="t-months-lbl">Срок рассрочки</label>
             <span class="val-badge" id="months-val">3 месяца</span>
         </div>
-        <input type="range" id="months-slider" min="3" max="12" value="3" step="1" oninput="triggerHaptic(); updateRangeStyle(this); calculate()">
+        <input type="range" id="months-slider" min="3" max="12" value="3" step="1" oninput="triggerHaptic(); syncSliderStyle(this); fastUIUpdate()" onchange="calculate()">
 
         <div id="dp-container">
             <div class="label-row">
@@ -194,10 +171,10 @@
                 <span class="val-badge" id="dp-badge" style="color: var(--primary);">25 %</span>
             </div>
             <div class="price-input-wrapper" style="padding: 10px 18px;">
-                <input type="number" id="dp-input" value="27500" step="1000" oninput="syncDp('input'); calculate()" onblur="correctInput('dp')">
+                <input type="number" id="dp-input" value="27500" step="1000" oninput="syncDp('input'); fastUIUpdate()" onblur="correctInput('dp')">
                 <span id="t-rub2">руб.</span>
             </div>
-            <input type="range" id="dp-slider" min="0" max="100000" value="27500" step="1000" oninput="syncDp('slider'); calculate()">
+            <input type="range" id="dp-slider" min="0" max="100000" value="27500" step="1000" oninput="syncDp('slider'); fastUIUpdate()" onchange="calculate()">
         </div>
     </div>
 
@@ -211,38 +188,40 @@
     </div>
 
     <div class="card result-card" id="receipt-capture">
-        <div class="result-header">
-            <h3 id="t-res-title">Результат расчета</h3>
-            <div class="check-row"><span class="label" id="t-r-price">Стоимость Товара</span><span class="dots"></span><span class="value" id="res-price"></span></div>
-            <div class="check-row"><span class="label" id="t-r-months">Срок Рассрочки</span><span class="dots"></span><span class="value" id="res-months"></span></div>
-            <div class="check-row"><span class="label" id="t-r-dp">Первоначальный Взнос</span><span class="dots"></span><span class="value" id="res-dp-percent"></span></div>
-        </div>
-        
-        <div class="result-total-zone">
-            <div class="check-row bold"><span class="label" id="t-r-monthly">Ежемесячный платеж</span><span class="dots"></span><span class="value" id="res-monthly"></span></div>
-            <div class="check-row bold" id="res-dp-rub-row"><span class="label" id="t-r-dp-rub">Первоначальный</span><span class="dots"></span><span class="value" id="res-dp-rub"></span></div>
-            <div class="check-row bold"><span class="label" id="t-r-markup">Торговая наценка</span><span class="dots"></span><span class="value" id="res-markup"></span></div>
-            
-            <div class="total-price-row">
-                <span class="total-price-label" id="t-r-total">Итого:</span>
-                <span class="total-price-value" id="res-total"></span>
+        <div id="receipt-content">
+            <div class="result-header">
+                <h3 id="t-res-title">Результат расчета</h3>
+                <div class="check-row"><span class="label" id="t-r-price">Стоимость Товара</span><span class="dots"></span><span class="value" id="res-price"></span></div>
+                <div class="check-row"><span class="label" id="t-r-months">Срок Рассрочки</span><span class="dots"></span><span class="value" id="res-months"></span></div>
+                <div class="check-row"><span class="label" id="t-r-dp">Первоначальный Взнос</span><span class="dots"></span><span class="value" id="res-dp-percent"></span></div>
             </div>
+            
+            <div class="result-total-zone">
+                <div class="check-row bold"><span class="label" id="t-r-monthly">Ежемесячный платеж</span><span class="dots"></span><span class="value" id="res-monthly"></span></div>
+                <div class="check-row bold" id="res-dp-rub-row"><span class="label" id="t-r-dp-rub">Первоначальный</span><span class="dots"></span><span class="value" id="res-dp-rub"></span></div>
+                <div class="check-row bold"><span class="label" id="t-r-markup">Торговая наценка</span><span class="dots"></span><span class="value" id="res-markup"></span></div>
+                
+                <div class="total-price-row">
+                    <span class="total-price-label" id="t-r-total">Итого:</span>
+                    <span class="total-price-value" id="res-total"></span>
+                </div>
 
-            <button class="schedule-btn" onclick="toggleSchedule()" id="btn-schedule-toggle" data-html2canvas-ignore>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span id="t-btn-schedule">График платежей</span>
-            </button>
-            <div class="schedule-list" id="schedule-container"></div>
+                <button class="schedule-btn" onclick="toggleSchedule()" id="btn-schedule-toggle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <span id="t-btn-schedule">График платежей</span>
+                </button>
+                <div class="schedule-list" id="schedule-container"></div>
+            </div>
         </div>
 
-        <div class="action-buttons" data-html2canvas-ignore>
+        <div class="action-buttons" id="action-buttons-zone">
             <button class="btn-icon btn-save" onclick="downloadReceipt()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span id="t-btn-save">Сохранить</span>
+                <span id="t-btn-save">Сохранить чек</span>
             </button>
             <button class="btn-icon btn-whatsapp" onclick="openWhatsApp()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                WhatsApp
+                В WhatsApp
             </button>
         </div>
     </div>
@@ -253,7 +232,10 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
     
-    // SMART DARK MODE ПОД TELEGRAM
+    // Телеграм прячет свою нижнюю кнопку, так как мы используем WhatsApp
+    tg.MainButton.hide();
+
+    // SMART DARK MODE
     if (tg.colorScheme === 'dark') {
         document.documentElement.style.setProperty('--bg-body', '#0f172a');
         document.documentElement.style.setProperty('--card-bg', '#1e293b');
@@ -266,7 +248,7 @@
         document.documentElement.style.setProperty('--btn-secondary-text', '#cbd5e1');
     }
 
-    // МУЛЬТИЯЗЫЧНОСТЬ (Словарь)
+    // МУЛЬТИЯЗЫЧНОСТЬ
     const dict = {
         ru: {
             title: "Калькулятор", halal: "100% Халяль (Мурабаха)", tabWith: "С первым взносом", tabNo: "Без взноса",
@@ -274,7 +256,8 @@
             reqTitle: "Требования к клиенту", req1: "Паспорт РФ", req2: "Постоянная регистрация в ЧР", req3: "Возраст от 20 лет",
             resTitle: "Результат расчета", rPrice: "Стоимость Товара", rMonths: "Срок Рассрочки", rDp: "Первоначальный Взнос",
             rMonthly: "Ежемесячный платеж", rDpRub: "Первоначальный", rMarkup: "Торговая наценка", rTotal: "Итого:",
-            btnSchedule: "График платежей", btnSave: "Сохранить", monthWord: "мес.", mainBtn: "ОФОРМИТЬ РАССРОЧКУ"
+            btnSchedule: "График платежей", btnSave: "Сохранить чек", monthWord: "мес.",
+            schedDp: "Первый взнос", schedPay: "платеж", today: "Сегодня"
         },
         ce: {
             title: "Калькулятор", halal: "100% Хьанал (Мурабаха)", tabWith: "Взносца", tabNo: "Взнос йоцуш",
@@ -282,11 +265,15 @@
             reqTitle: "Клиенте йолу требованеш", req1: "РФ Паспорт", req2: "Нохчийчохь регистраци", req3: "20 шо кхаьчна хилар",
             resTitle: "Расчётан жамӀ", rPrice: "Товаран мах", rMonths: "Рассрочкин хан", rDp: "Хьалхара взнос",
             rMonthly: "ХӀора беттан мах", rDpRub: "Хьалхара взнос", rMarkup: "ТӀетоьхна мах", rTotal: "ЖамӀ:",
-            btnSchedule: "Платежийн график", btnSave: "Ӏалашъян", monthWord: "бутт", mainBtn: "КЕХАТАШ ДАН"
+            btnSchedule: "Платежийн график", btnSave: "Ӏалашъян", monthWord: "бутт",
+            schedDp: "Хьалхара взнос", schedPay: "тӀедиллар", today: "Тахана"
         }
     };
 
     let currentLang = 'ru';
+    let hasDownPayment = true;
+    let hapticTimer = null;
+
     function switchLang(lang) {
         currentLang = lang;
         document.getElementById('lang-ru').classList.toggle('active', lang === 'ru');
@@ -301,12 +288,10 @@
         document.getElementById('t-dp-lbl').innerText = dict[lang].dpLbl;
         document.getElementById('t-rub1').innerText = dict[lang].rub;
         document.getElementById('t-rub2').innerText = dict[lang].rub;
-        
         document.getElementById('t-req-title').innerText = dict[lang].reqTitle;
         document.getElementById('t-req1').innerText = dict[lang].req1;
         document.getElementById('t-req2').innerText = dict[lang].req2;
         document.getElementById('t-req3').innerText = dict[lang].req3;
-        
         document.getElementById('t-res-title').innerText = dict[lang].resTitle;
         document.getElementById('t-r-price').innerText = dict[lang].rPrice;
         document.getElementById('t-r-months').innerText = dict[lang].rMonths;
@@ -318,10 +303,9 @@
         document.getElementById('t-btn-schedule').innerText = dict[lang].btnSchedule;
         document.getElementById('t-btn-save').innerText = dict[lang].btnSave;
         
-        calculate(); // Пересчитываем для обновления окончаний
+        fastUIUpdate();
+        calculate(); 
     }
-
-    let hasDownPayment = true;
 
     function setDpMode(withDp) {
         hasDownPayment = withDp;
@@ -345,12 +329,32 @@
             resDpRubRow.style.display = 'none';
             document.getElementById('t-r-dp').innerText = dict[currentLang].tabNo;
         }
+        fastUIUpdate();
         calculate();
     }
 
     function formatMoney(amount) { return amount.toLocaleString('ru-RU').replace(/\s/g, '.'); }
-    function triggerHaptic() { if (tg.HapticFeedback) { tg.HapticFeedback.selectionChanged(); } }
-    function updateRangeStyle(slider) { const val = (slider.value - slider.min) / (slider.max - slider.min) * 100; slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`; }
+    
+    function triggerHaptic() { 
+        if (!tg.HapticFeedback || hapticTimer) return;
+        tg.HapticFeedback.selectionChanged(); 
+        hapticTimer = setTimeout(() => hapticTimer = null, 50);
+    }
+    
+    function syncSliderStyle(slider) { 
+        const val = (slider.value - slider.min) / (slider.max - slider.min) * 100; 
+        slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`; 
+    }
+
+    function fastUIUpdate() {
+        let price = parseInt(document.getElementById('price-input').value) || 0;
+        let months = parseInt(document.getElementById('months-slider').value) || 3;
+        let dp = hasDownPayment ? (parseInt(document.getElementById('dp-input').value) || 0) : 0;
+        let dpPercent = price > 0 ? Math.round((dp / price) * 100) : 0;
+
+        document.getElementById('months-val').innerText = `${months} ${dict[currentLang].monthWord}`;
+        document.getElementById('dp-badge').innerText = hasDownPayment ? `${dpPercent} %` : '0 %';
+    }
 
     function syncPrice(source) {
         let input = document.getElementById('price-input');
@@ -358,7 +362,7 @@
         if (source === 'slider') { input.value = slider.value; triggerHaptic(); } 
         else { slider.value = parseInt(input.value) || 0; }
         if (hasDownPayment && source === 'slider') { document.getElementById('dp-input').value = Math.floor(slider.value * 0.25); syncDp('input'); }
-        updateDpLimits(); updateRangeStyle(slider);
+        updateDpLimits(); syncSliderStyle(slider);
     }
 
     function syncDp(source) {
@@ -366,7 +370,7 @@
         let slider = document.getElementById('dp-slider');
         if (source === 'slider') { input.value = slider.value; triggerHaptic(); } 
         else { slider.value = parseInt(input.value) || 0; }
-        updateRangeStyle(slider);
+        syncSliderStyle(slider);
     }
 
     function correctInput(type) {
@@ -384,6 +388,7 @@
             if (val < 0) dpInput.value = 0;
             syncDp('input');
         }
+        fastUIUpdate();
         calculate();
     }
 
@@ -394,10 +399,9 @@
         let maxDp = Math.floor(price * 0.8); 
         dpSlider.max = maxDp;
         if (parseInt(dpInput.value) > maxDp) { dpInput.value = maxDp; dpSlider.value = maxDp; }
-        updateRangeStyle(dpSlider);
+        syncSliderStyle(dpSlider);
     }
 
-    // ХАЛЯЛЬ АЛЕРТ
     function showHalalInfo() {
         let msg = currentLang === 'ru' ? 
             "Договор Мурабаха.\nМы не выдаем деньги под проценты. Мы выкупаем товар и продаем его вам с фиксированной торговой наценкой. Никаких скрытых комиссий и пеней." : 
@@ -405,46 +409,84 @@
         tg.showAlert(msg);
     }
 
-    // ГРАФИК ПЛАТЕЖЕЙ
-    function generateSchedule(months, monthlyPayment) {
+    // ГРАФИК ПЛАТЕЖЕЙ С ПЕРВЫМ ВЗНОСОМ
+    function generateSchedule(months, monthlyPayment, downPayment) {
         let scheduleHTML = '';
         let today = new Date();
+        
+        // Первый взнос (сегодня)
+        if (hasDownPayment && downPayment > 0) {
+            let todayStr = today.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
+            scheduleHTML += `<div class="schedule-item dp-item"><span>${dict[currentLang].schedDp} (${todayStr})</span><span>${formatMoney(downPayment)} ₽</span></div>`;
+        }
+        
+        // Последующие платежи
         for (let i = 1; i <= months; i++) {
             let paymentDate = new Date(today.getFullYear(), today.getMonth() + i, today.getDate());
             let dateStr = paymentDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
-            scheduleHTML += `<div class="schedule-item"><span>${i} платеж (${dateStr})</span><span>${formatMoney(monthlyPayment)} ₽</span></div>`;
+            let term = `${i} ${dict[currentLang].schedPay}`;
+            scheduleHTML += `<div class="schedule-item"><span>${term} (${dateStr})</span><span>${formatMoney(monthlyPayment)} ₽</span></div>`;
         }
         document.getElementById('schedule-container').innerHTML = scheduleHTML;
     }
 
-    function toggleSchedule() {
-        document.getElementById('schedule-container').classList.toggle('open');
-    }
+    function toggleSchedule() { document.getElementById('schedule-container').classList.toggle('open'); }
 
-    // ЭКСПОРТ ЧЕКА В КАРТИНКУ
+    // ПРОФЕССИОНАЛЬНОЕ СОХРАНЕНИЕ ЧЕКА
     function downloadReceipt() {
         const captureDiv = document.getElementById('receipt-capture');
-        // Закрываем график, чтобы скриншот был аккуратным
-        document.getElementById('schedule-container').classList.remove('open');
-        
-        html2canvas(captureDiv, { backgroundColor: getComputedStyle(document.body).backgroundColor }).then(canvas => {
-            let link = document.createElement('a');
-            link.download = `Рассрочка_${new Date().toLocaleDateString('ru-RU')}.png`;
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-        });
+        const actionZone = document.getElementById('action-buttons-zone');
+        const scheduleBtn = document.getElementById('btn-schedule-toggle');
+        const scheduleContainer = document.getElementById('schedule-container');
+
+        // Запоминаем, был ли открыт график
+        let isScheduleOpen = scheduleContainer.classList.contains('open');
+
+        // Временно прячем кнопки для чистого скриншота
+        actionZone.style.display = 'none';
+        scheduleBtn.style.display = 'none';
+        scheduleContainer.classList.remove('open'); 
+
+        // Даем браузеру долю секунды на применение стилей (скрытие кнопок)
+        setTimeout(() => {
+            html2canvas(captureDiv, { 
+                backgroundColor: getComputedStyle(document.body).backgroundColor, 
+                scale: 2, // Высокое качество
+                useCORS: true // Разрешает кросс-доменные рендеры
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `Рассрочка_${new Date().toLocaleDateString('ru-RU')}.png`;
+                link.href = canvas.toDataURL("image/png"); 
+                link.click();
+                
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }).finally(() => {
+                // Возвращаем интерфейс обратно в любом случае
+                actionZone.style.display = 'flex';
+                scheduleBtn.style.display = 'flex';
+                if (isScheduleOpen) {
+                    scheduleContainer.classList.add('open');
+                }
+            });
+        }, 300); 
     }
 
-    function openWhatsApp() {
-        window.open("https://wa.me/79990000000?text=Здравствуйте,%20хочу%20оформить%20рассрочку", "_blank");
+    // ПЕРЕХОД В WHATSAPP
+    function openWhatsApp() { 
+        let price = document.getElementById('price-input').value;
+        let dp = document.getElementById('dp-input').value;
+        let months = document.getElementById('months-slider').value;
+        let text = `Здравствуйте! Хочу оформить рассрочку. Товар: ${formatMoney(parseInt(price))} руб. Взнос: ${formatMoney(parseInt(dp))} руб. Срок: ${months} мес.`;
+        window.open(`https://wa.me/79990000000?text=${encodeURIComponent(text)}`, "_blank"); 
     }
 
     window.onload = function() {
         let startPrice = parseInt(document.getElementById('price-input').value);
         document.getElementById('dp-input').value = Math.floor(startPrice * 0.25);
         updateDpLimits(); syncDp('input');
-        updateRangeStyle(document.getElementById('price-slider'));
-        updateRangeStyle(document.getElementById('months-slider'));
+        syncSliderStyle(document.getElementById('price-slider'));
+        syncSliderStyle(document.getElementById('months-slider'));
+        fastUIUpdate();
         calculate(); 
     };
 
@@ -452,15 +494,10 @@
         let price = parseInt(document.getElementById('price-input').value) || 0;
         let months = parseInt(document.getElementById('months-slider').value) || 3;
         let dp = hasDownPayment ? (parseInt(document.getElementById('dp-input').value) || 0) : 0;
-        let dpPercent = Math.round((dp / price) * 100) || 0;
+        let dpPercent = price > 0 ? Math.round((dp / price) * 100) : 0;
         
-        let monthStr = `${months} ${dict[currentLang].monthWord}`;
-        document.getElementById('months-val').innerText = monthStr;
-        document.getElementById('dp-badge').innerText = hasDownPayment ? `${dpPercent} %` : '0 %';
+        if (price < 25000) { document.getElementById('receipt-capture').style.display = 'none'; return; }
 
-        if (price < 25000) { document.getElementById('receipt-capture').style.display = 'none'; tg.MainButton.hide(); return; }
-
-        // МАТЕМАТИКА (Строго по твоей Excel)
         let financedAmount = price - dp; 
         let monthlyRate = 0.04; 
         let rawTotalDebt = financedAmount + (financedAmount * monthlyRate * months);
@@ -469,8 +506,9 @@
         let totalMarkup = remainingDebt - financedAmount; 
         let totalInstallmentPrice = remainingDebt + dp;   
 
-        // ЗАПОЛНЕНИЕ ЧЕКА
         let curStr = dict[currentLang].rub;
+        let monthStr = `${months} ${dict[currentLang].monthWord}`;
+        
         document.getElementById('res-price').innerText = `${formatMoney(price)} ${curStr}`;
         document.getElementById('res-months').innerText = monthStr;
         document.getElementById('res-dp-percent').innerText = hasDownPayment ? `${dpPercent} %` : '—';
@@ -479,17 +517,8 @@
         document.getElementById('res-markup').innerText = `${formatMoney(totalMarkup)} ${curStr}`;
         document.getElementById('res-total').innerText = `${formatMoney(totalInstallmentPrice)} ₽`;
 
-        generateSchedule(months, finalMonthlyPayment);
+        generateSchedule(months, finalMonthlyPayment, dp);
         document.getElementById('receipt-capture').style.display = 'block';
-
-        tg.MainButton.setText(`${dict[currentLang].mainBtn} (${formatMoney(finalMonthlyPayment)} ₽)`);
-        tg.MainButton.color = tg.themeParams.button_color || '#059669';
-        tg.MainButton.textColor = tg.themeParams.button_text_color || '#ffffff';
-        tg.MainButton.show();
-        
-        tg.MainButton.onClick(() => {
-            tg.sendData(JSON.stringify({ price, downPayment: dp, months, monthlyPayment: finalMonthlyPayment, totalMarkup, totalPrice: totalInstallmentPrice }));
-        });
     }
 </script>
 </body>
