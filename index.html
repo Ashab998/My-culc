@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Premium Islamic Installment</title>
+    <title>Mubaraka Installment</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -21,6 +21,8 @@
             --receipt-bg: #f8fafc;
             --btn-secondary: #e2e8f0;
             --btn-secondary-text: #475569;
+            --info-bg: #f0f9ff;
+            --info-text: #0284c7;
         }
         
         body {
@@ -37,7 +39,7 @@
         
         .container { max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
 
-        /* HEADER & LANG TOGGLE */
+        /* HEADER */
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header-top h2 { margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
         .lang-toggle { background: var(--track-bg); padding: 4px; border-radius: 8px; display: flex; gap: 4px; }
@@ -56,9 +58,10 @@
 
         /* TABS */
         .tabs-container { background: var(--track-bg); padding: 4px; border-radius: 12px; display: flex; margin-bottom: 24px; position: relative; }
-        .tab { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; z-index: 2; transition: color 0.3s; }
+        .tab { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; z-index: 2; transition: all 0.3s; }
         .tab.active { color: var(--text-main); }
         .tab-slider { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: var(--card-bg); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; }
+        .tab.disabled { opacity: 0.4; pointer-events: none; }
 
         /* CARDS */
         .card { background: var(--card-bg); padding: 24px; border-radius: 20px; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04); margin-bottom: 16px; }
@@ -66,9 +69,25 @@
         .label-row.first { margin-top: 0; }
         label { font-weight: 600; font-size: 14px; color: var(--text-muted); }
         .val-badge { font-weight: 800; font-size: 16px; color: var(--text-main); font-variant-numeric: tabular-nums; text-align: right; min-width: 90px; }
+        
+        /* УЛУЧШЕННЫЙ ИНФОБЛОК (ВМЕСТО КРАСНОЙ ОШИБКИ) */
+        .info-text { 
+            color: var(--info-text); 
+            background: var(--info-bg);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px; 
+            font-weight: 600; 
+            margin-top: 14px; 
+            display: none; 
+            align-items: center;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* INPUTS */
-        .price-input-wrapper { display: flex; align-items: center; background: var(--bg-body); border: 2px solid transparent; border-radius: 14px; padding: 14px 18px; transition: all 0.2s; }
+        /* INPUTS & SLIDERS */
+        .price-input-wrapper { display: flex; align-items: center; background: var(--bg-body); border: 2px solid transparent; border-radius: 14px; padding: 14px 18px; transition: border-color 0.2s, background-color 0.2s; }
         .price-input-wrapper:focus-within { border-color: var(--primary); background: var(--card-bg); }
         .price-input-wrapper input { width: 100%; border: none; background: transparent; font-size: 20px; font-weight: 800; color: var(--text-main); outline: none; font-variant-numeric: tabular-nums; }
         .price-input-wrapper span { font-size: 18px; font-weight: 700; color: var(--text-muted); margin-left: 8px; }
@@ -77,7 +96,7 @@
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; border: 3px solid var(--primary); cursor: pointer; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
         .limits-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         
-        #dp-container { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 200px; opacity: 1; }
+        #dp-container { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 300px; opacity: 1; }
         #dp-container.hidden { max-height: 0; opacity: 0; margin-top: -10px; pointer-events: none; }
 
         /* REQUIREMENTS */
@@ -88,7 +107,7 @@
         .requirements-card ul li::before { content: "✓"; position: absolute; left: 0; color: #6ee7b7; font-weight: bold; }
 
         /* RECEIPT CARD */
-        .result-card { padding: 0; overflow: hidden; border: 1px solid var(--track-bg); display: none; }
+        .result-card { padding: 0; border: 1px solid var(--track-bg); display: block; opacity: 1; transition: opacity 0.3s; }
         .result-header { padding: 24px 24px 16px 24px; background: var(--card-bg); border-radius: 20px 20px 0 0; }
         .result-header h3 { margin: 0 0 20px 0; font-size: 18px; color: var(--text-main); }
         .check-row { display: flex; align-items: baseline; margin-bottom: 14px; font-size: 13px; color: var(--text-muted); }
@@ -100,30 +119,33 @@
         .result-total-zone { background: var(--receipt-bg); padding: 24px; border-top: 2px dashed #cbd5e1; border-radius: 0 0 20px 20px;}
         .total-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
         .total-price-label { font-size: 16px; font-weight: 700; color: var(--text-muted); }
-        .total-price-value { font-size: 24px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+        .total-price-value { font-size: 24px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; transition: color 0.3s;}
 
         /* SCHEDULE */
         .schedule-btn { width: 100%; background: none; border: 1px solid var(--primary); color: var(--primary); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-top: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: background 0.2s; }
-        .schedule-btn:active { background: rgba(5, 150, 105, 0.1); }
-        .schedule-list { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0, 1, 0, 1); }
-        .schedule-list.open { max-height: 1000px; margin-top: 16px; transition: max-height 0.5s ease-in-out; }
+        .schedule-list { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .schedule-list.open { max-height: 1200px; margin-top: 16px; transition: max-height 0.5s ease-in; }
         .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--track-bg); font-size: 13px; color: var(--text-main); font-variant-numeric: tabular-nums;}
         .schedule-item:last-child { border-bottom: none; padding-bottom: 0; }
         .schedule-item.dp-item { font-weight: 700; color: var(--primary); border-bottom: 2px solid var(--track-bg); padding-bottom: 14px; margin-bottom: 6px; }
         
         /* ACTION BUTTONS */
         .action-buttons { display: flex; gap: 10px; padding: 20px 24px; background: var(--card-bg); border-top: 1px solid var(--track-bg); border-radius: 0 0 20px 20px;}
-        .btn-icon { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; transition: transform 0.1s;}
-        .btn-icon:active { transform: scale(0.97); }
+        .btn-icon { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; cursor: pointer;}
         .btn-save { background: var(--btn-secondary); color: var(--btn-secondary-text); }
-        
-        /* Кнопка WhatsApp с пульсацией */
-        @keyframes pulse-wa {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
-            70% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-        .btn-whatsapp { background: #25D366; color: white; text-decoration: none; animation: pulse-wa 2s infinite; }
+        @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+        .btn-whatsapp { background: #25D366; color: white; animation: pulse-wa 2s infinite; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);}
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card-bg); padding: 24px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; display: flex; flex-direction: column; max-height: 90vh;}
+        #t-modal-desc { font-size: 14px; color: var(--text-muted); margin: 0 0 15px 0; line-height: 1.5; font-weight: 500;}
+        #render-img { width: 100%; border-radius: 12px; border: 1px solid var(--track-bg); object-fit: contain; min-height: 0; flex-shrink: 1; }
+        .modal-btn-group { display: flex; gap: 10px; margin-top: 20px; flex-shrink: 0;}
+        .modal-btn { flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none;}
+        .modal-btn.primary { background: var(--primary); color: white; }
+        .modal-btn.secondary { background: var(--btn-secondary); color: var(--btn-secondary-text); }
     </style>
 </head>
 <body>
@@ -143,7 +165,7 @@
 
     <div class="halal-badge" onclick="showHalalInfo()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        <span id="t-halal">100% Халяль (Мурабаха)</span>
+        <span id="t-halal">100% Халяль (Мубарака)</span>
     </div>
 
     <div class="card">
@@ -157,12 +179,13 @@
             <label id="t-price-lbl">Стоимость товара</label>
         </div>
         <div class="price-input-wrapper">
-            <input type="number" id="price-input" value="110000" oninput="syncPrice('input'); fastUIUpdate()" onblur="correctInput('price')">
+            <input type="number" id="price-input" value="110000" oninput="handleInput('price')" onblur="handleBlur('price')">
             <span id="t-rub1">руб.</span>
         </div>
-        <input type="range" id="price-slider" min="25000" max="200000" step="1000" value="110000" oninput="syncPrice('slider'); fastUIUpdate()" onchange="calculate()">
+        
+        <input type="range" id="price-slider" min="6000" max="200000" step="1000" value="110000" oninput="handleSlider('price')" onchange="handleRelease()">
         <div class="limits-text">
-            <span>25.000</span>
+            <span>6.000</span>
             <span>200.000</span>
         </div>
         
@@ -170,18 +193,25 @@
             <label id="t-months-lbl">Срок рассрочки</label>
             <span class="val-badge" id="months-val">3 месяца</span>
         </div>
-        <input type="range" id="months-slider" min="3" max="12" value="3" step="1" oninput="triggerHaptic(); syncSliderStyle(this); fastUIUpdate()" onchange="calculate()">
+        <input type="range" id="months-slider" min="3" max="12" value="3" step="1" oninput="handleSlider('months')" onchange="handleRelease()">
 
         <div id="dp-container">
             <div class="label-row">
                 <label id="t-dp-lbl">Первоначальный взнос</label>
                 <span class="val-badge" id="dp-badge" style="color: var(--primary);">25 %</span>
             </div>
-            <div class="price-input-wrapper" style="padding: 10px 18px;">
-                <input type="number" id="dp-input" value="27500" step="1000" oninput="syncDp('input'); fastUIUpdate()" onblur="correctInput('dp')">
+            <div id="dp-input-box" class="price-input-wrapper" style="padding: 10px 18px;">
+                <input type="number" id="dp-input" value="27500" step="100" oninput="handleInput('dp')" onblur="handleBlur('dp')">
                 <span id="t-rub2">руб.</span>
             </div>
-            <input type="range" id="dp-slider" min="0" max="100000" value="27500" step="1000" oninput="syncDp('slider'); fastUIUpdate()" onchange="calculate()">
+            
+            <div id="dp-warning" class="info-text">ℹ️ При сумме от 100 000 руб. минимальный взнос 25%</div>
+            
+            <input type="range" id="dp-slider" min="0" max="80" value="25" step="1" oninput="handleSlider('dp')" onchange="handleRelease()">
+            <div class="limits-text">
+                <span id="dp-min-lbl">0%</span>
+                <span id="dp-max-lbl">80%</span>
+            </div>
         </div>
     </div>
 
@@ -232,54 +262,79 @@
             </button>
         </div>
     </div>
+</div>
 
+<div id="save-modal" class="modal-overlay">
+    <div class="modal-content">
+        <p id="t-modal-desc">Долгое нажатие на картинку, чтобы сохранить её в галерею, или нажмите «Поделиться».</p>
+        <img id="render-img" src="" alt="Чек">
+        <div class="modal-btn-group">
+            <button class="modal-btn primary" onclick="shareImage()" id="btn-share" style="display:none;">
+                <span id="t-share-btn">Поделиться</span>
+            </button>
+            <button class="modal-btn secondary" onclick="closeModal()">
+                <span id="t-close-btn">Закрыть</span>
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    
-    // Прячем системную кнопку, так как используется WhatsApp
     if(tg.MainButton) tg.MainButton.hide();
 
-    // SMART DARK MODE
+    // DARK MODE COLORS
     if (tg.colorScheme === 'dark') {
         document.documentElement.style.setProperty('--bg-body', '#0f172a');
         document.documentElement.style.setProperty('--card-bg', '#1e293b');
         document.documentElement.style.setProperty('--text-main', '#f8fafc');
         document.documentElement.style.setProperty('--text-muted', '#94a3b8');
         document.documentElement.style.setProperty('--track-bg', '#334155');
-        document.documentElement.style.setProperty('--divider', '#334155');
         document.documentElement.style.setProperty('--receipt-bg', '#0f172a');
         document.documentElement.style.setProperty('--btn-secondary', '#334155');
         document.documentElement.style.setProperty('--btn-secondary-text', '#cbd5e1');
+        document.documentElement.style.setProperty('--info-bg', 'rgba(14, 165, 233, 0.1)');
+        document.documentElement.style.setProperty('--info-text', '#38bdf8');
     }
 
-    // МУЛЬТИЯЗЫЧНОСТЬ
     const dict = {
         ru: {
-            title: "Калькулятор", halal: "100% Халяль (Мурабаха)", tabWith: "С первым взносом", tabNo: "Без взноса",
+            title: "Калькулятор", halal: "100% Халяль (Мубарака)", tabWith: "С первым взносом", tabNo: "Без взноса",
             priceLbl: "Стоимость товара", monthsLbl: "Срок рассрочки", dpLbl: "Первоначальный взнос", rub: "руб.",
             reqTitle: "Требования к клиенту", req1: "Паспорт РФ", req2: "Постоянная регистрация в ЧР", req3: "Возраст от 20 лет",
             resTitle: "Результат расчета", rPrice: "Стоимость Товара", rMonths: "Срок Рассрочки", rDp: "Первоначальный Взнос",
             rMonthly: "Ежемесячный платеж", rDpRub: "Первоначальный", rMarkup: "Торговая наценка", rTotal: "Итого:",
             btnSchedule: "График платежей", btnSave: "Сохранить чек", monthWord: "мес.",
-            schedDp: "Первый взнос", schedPay: "платеж", today: "Сегодня"
+            schedDp: "Первый взнос", schedPay: "платеж",
+            modalDesc: "Долгое нажатие на картинку, чтобы сохранить её в галерею, или нажмите «Поделиться».",
+            shareBtn: "Поделиться", closeBtn: "Закрыть", 
+            dpInfoText: "ℹ️ При сумме от 100 000 руб. минимальный взнос 25%"
         },
         ce: {
-            title: "Калькулятор", halal: "100% Хьанал (Мурабаха)", tabWith: "Взносца", tabNo: "Взнос йоцуш",
+            title: "Калькулятор", halal: "100% Хьанал (Мубарака)", tabWith: "Взносца", tabNo: "Взнос йоцуш",
             priceLbl: "Товаран мах", monthsLbl: "Рассрочкин хан", dpLbl: "Хьалхара взнос", rub: "сом",
             reqTitle: "Клиенте йолу требованеш", req1: "РФ Паспорт", req2: "Нохчийчохь регистраци", req3: "20 шо кхаьчна хилар",
             resTitle: "Расчётан жамӀ", rPrice: "Товаран мах", rMonths: "Рассрочкин хан", rDp: "Хьалхара взнос",
             rMonthly: "ХӀора беттан мах", rDpRub: "Хьалхара взнос", rMarkup: "ТӀетоьхна мах", rTotal: "ЖамӀ:",
             btnSchedule: "Платежийн график", btnSave: "Ӏалашъян", monthWord: "бутт",
-            schedDp: "Хьалхара взнос", schedPay: "тӀедиллар", today: "Тахана"
+            schedDp: "Хьалхара взнос", schedPay: "тӀедиллар",
+            modalDesc: "Суьрта тIехь цIийбдина латтаде Ӏалашдан, йа «Декъа» тIетаIаде.",
+            shareBtn: "Декъа", closeBtn: "ДIачIаба", 
+            dpInfoText: "ℹ️ 100 000 сом совдаьлча, хьалхара взнос 25% дуьйна"
         }
     };
 
     let currentLang = 'ru';
     let hasDownPayment = true;
-    let hapticTimer = null;
+    let currentBlob = null; 
+    let lastHapticTime = 0;
+    
+    const elPriceInput = document.getElementById('price-input');
+    const elPriceSlider = document.getElementById('price-slider');
+    const elDpInput = document.getElementById('dp-input');
+    const elDpSlider = document.getElementById('dp-slider');
+    const elMonthsSlider = document.getElementById('months-slider');
 
     function switchLang(lang) {
         currentLang = lang;
@@ -310,199 +365,202 @@
         document.getElementById('t-btn-schedule').innerText = dict[lang].btnSchedule;
         document.getElementById('t-btn-save').innerText = dict[lang].btnSave;
         
-        fastUIUpdate();
-        calculate(); 
+        document.getElementById('t-modal-desc').innerText = dict[lang].modalDesc;
+        document.getElementById('t-share-btn').innerText = dict[lang].shareBtn;
+        document.getElementById('t-close-btn').innerText = dict[lang].closeBtn;
+        document.getElementById('dp-warning').innerText = dict[lang].dpInfoText;
+        
+        requestAnimationFrame(updateUI);
+        calculateFinal(); 
+    }
+
+    // НОВАЯ ПЛАВНАЯ ЛОГИКА
+    function updateDpState() {
+        let price = parseInt(elPriceInput.value) || 0;
+        let minPct = price >= 100000 ? 25 : 0;
+        let maxPct = 80;
+
+        // Обновляем ползунок процентов
+        elDpSlider.min = minPct;
+        elDpSlider.max = maxPct;
+        document.getElementById('dp-min-lbl').innerText = minPct + '%';
+        document.getElementById('dp-max-lbl').innerText = maxPct + '%';
+
+        let dpWarning = document.getElementById('dp-warning');
+        if (price >= 100000) {
+            dpWarning.style.display = 'flex';
+            document.getElementById('tab-no-dp').classList.add('disabled');
+            
+            // Если вкладка "Без взноса" была активна, переключаем
+            if (!hasDownPayment) {
+                hasDownPayment = true;
+                document.getElementById('tab-bg').style.transform = 'translateX(0)';
+                document.getElementById('tab-with-dp').classList.add('active');
+                document.getElementById('tab-no-dp').classList.remove('active');
+                document.getElementById('dp-container').classList.remove('hidden');
+                document.getElementById('res-dp-rub-row').style.display = 'flex';
+                document.getElementById('t-r-dp').innerText = dict[currentLang].rDp;
+            }
+        } else {
+            dpWarning.style.display = 'none';
+            document.getElementById('tab-no-dp').classList.remove('disabled');
+        }
+
+        // Подтягиваем значение процентов, если оно ушло за лимит
+        let currentPct = parseInt(elDpSlider.value) || 0;
+        if (currentPct < minPct) currentPct = minPct;
+        if (currentPct > maxPct) currentPct = maxPct;
+        elDpSlider.value = currentPct;
+
+        // Высчитываем реальные рубли на основе % (Округление до 100 для красоты)
+        let rub = Math.floor(price * (currentPct / 100));
+        rub = Math.round(rub / 100) * 100;
+        elDpInput.value = rub;
+
+        syncSliderVisuals(elDpSlider);
     }
 
     function setDpMode(withDp) {
+        let price = parseInt(elPriceInput.value) || 0;
+        if (!withDp && price >= 100000) return; // Молча игнорируем, если заблокировано
+
         hasDownPayment = withDp;
-        triggerHaptic();
+        haptic();
         document.getElementById('tab-bg').style.transform = withDp ? 'translateX(0)' : 'translateX(100%)';
         document.getElementById('tab-with-dp').classList.toggle('active', withDp);
         document.getElementById('tab-no-dp').classList.toggle('active', !withDp);
         
-        let dpContainer = document.getElementById('dp-container');
-        let resDpRubRow = document.getElementById('res-dp-rub-row');
-        
         if (withDp) {
-            dpContainer.classList.remove('hidden');
-            resDpRubRow.style.display = 'flex';
+            document.getElementById('dp-container').classList.remove('hidden');
+            document.getElementById('res-dp-rub-row').style.display = 'flex';
             document.getElementById('t-r-dp').innerText = dict[currentLang].rDp;
-            let price = parseInt(document.getElementById('price-input').value) || 0;
-            document.getElementById('dp-input').value = Math.floor(price * 0.25);
-            syncDp('input');
         } else {
-            dpContainer.classList.add('hidden');
-            resDpRubRow.style.display = 'none';
+            document.getElementById('dp-container').classList.add('hidden');
+            document.getElementById('res-dp-rub-row').style.display = 'none';
             document.getElementById('t-r-dp').innerText = dict[currentLang].tabNo;
         }
-        fastUIUpdate();
-        calculate();
+        
+        requestAnimationFrame(updateUI);
+        calculateFinal();
     }
 
-    function formatMoney(amount) { return amount.toLocaleString('ru-RU').replace(/\s/g, '.'); }
-    
-    function triggerHaptic() { 
-        if (!tg.HapticFeedback || hapticTimer) return;
-        tg.HapticFeedback.selectionChanged(); 
-        hapticTimer = setTimeout(() => hapticTimer = null, 50);
-    }
-    
-    function syncSliderStyle(slider) { 
-        const val = (slider.value - slider.min) / (slider.max - slider.min) * 100; 
-        slider.style.background = `linear-gradient(to right, var(--primary) ${val}%, var(--track-bg) ${val}%)`; 
+    function haptic() {
+        if (!tg.HapticFeedback) return;
+        let now = Date.now();
+        if (now - lastHapticTime > 100) { 
+            tg.HapticFeedback.selectionChanged();
+            lastHapticTime = now;
+        }
     }
 
-    function fastUIUpdate() {
-        let price = parseInt(document.getElementById('price-input').value) || 0;
-        let months = parseInt(document.getElementById('months-slider').value) || 3;
-        let dp = hasDownPayment ? (parseInt(document.getElementById('dp-input').value) || 0) : 0;
-        let dpPercent = price > 0 ? Math.round((dp / price) * 100) : 0;
+    function syncSliderVisuals(slider) {
+        let min = parseInt(slider.min) || 0;
+        let max = parseInt(slider.max) || 100;
+        let val = parseInt(slider.value) || 0;
+        
+        let percentage = ((val - min) / (max - min)) * 100;
+        if (percentage < 0) percentage = 0;
+        if (percentage > 100) percentage = 100;
+        
+        slider.style.background = `linear-gradient(to right, var(--primary) ${percentage}%, var(--track-bg) ${percentage}%)`;
+    }
+
+    // Обработка ВВОДА В РЕАЛЬНОМ ВРЕМЕНИ
+    function handleInput(type) {
+        if (type === 'price') {
+            elPriceSlider.value = elPriceInput.value;
+            updateDpState();
+        } else if (type === 'dp') {
+            let rub = parseInt(elDpInput.value) || 0;
+            let price = parseInt(elPriceInput.value) || 0;
+            // Переводим введенные рубли в проценты для ползунка
+            let pct = price > 0 ? (rub / price) * 100 : 0;
+            elDpSlider.value = pct; 
+            syncSliderVisuals(elDpSlider);
+        }
+        requestAnimationFrame(updateUI);
+    }
+
+    // Обработка ПЕРЕТАСКИВАНИЯ ПОЛЗУНКОВ
+    function handleSlider(type) {
+        haptic();
+        if (type === 'price') {
+            elPriceInput.value = elPriceSlider.value;
+            updateDpState();
+        } else if (type === 'dp') {
+            let price = parseInt(elPriceInput.value) || 0;
+            let pct = parseInt(elDpSlider.value) || 0;
+            // Переводим ползунок (%) в рубли для инпута
+            let rub = Math.floor(price * (pct / 100));
+            rub = Math.round(rub / 100) * 100;
+            elDpInput.value = rub;
+            syncSliderVisuals(elDpSlider);
+        } else if (type === 'months') {
+            syncSliderVisuals(elMonthsSlider);
+        }
+        requestAnimationFrame(updateUI);
+    }
+
+    // Обработка ПОТЕРИ ФОКУСА (Когда пользователь закончил вводить цифры руками)
+    function handleBlur(type) {
+        if (type === 'price') {
+            let val = parseInt(elPriceInput.value) || 0;
+            if (val > 200000) val = 200000;
+            if (val < 6000) val = 6000;
+            elPriceInput.value = val;
+            elPriceSlider.value = val;
+            updateDpState();
+        } else if (type === 'dp') {
+            let price = parseInt(elPriceInput.value) || 0;
+            let rub = parseInt(elDpInput.value) || 0;
+            
+            let minPct = price >= 100000 ? 25 : 0;
+            let minRub = Math.floor(price * (minPct / 100));
+            let maxRub = Math.floor(price * 0.8);
+            
+            // Если ввел слишком мало или много
+            if (rub < minRub) rub = minRub;
+            if (rub > maxRub) rub = maxRub;
+            
+            rub = Math.round(rub / 100) * 100;
+            elDpInput.value = rub;
+            elDpSlider.value = (rub / price) * 100;
+            syncSliderVisuals(elDpSlider);
+        }
+        requestAnimationFrame(updateUI);
+        calculateFinal();
+    }
+
+    // Когда отпустили любой ползунок
+    function handleRelease() {
+        calculateFinal();
+    }
+
+    function updateUI() {
+        let price = parseInt(elPriceInput.value) || 0;
+        let months = parseInt(elMonthsSlider.value) || 3;
+        let rubDp = hasDownPayment ? (parseInt(elDpInput.value) || 0) : 0;
+        let dpPercent = price > 0 ? Math.round((rubDp / price) * 100) : 0;
 
         document.getElementById('months-val').innerText = `${months} ${dict[currentLang].monthWord}`;
         document.getElementById('dp-badge').innerText = hasDownPayment ? `${dpPercent} %` : '0 %';
-    }
-
-    function syncPrice(source) {
-        let input = document.getElementById('price-input');
-        let slider = document.getElementById('price-slider');
-        if (source === 'slider') { input.value = slider.value; triggerHaptic(); } 
-        else { slider.value = parseInt(input.value) || 0; }
-        if (hasDownPayment && source === 'slider') { document.getElementById('dp-input').value = Math.floor(slider.value * 0.25); syncDp('input'); }
-        updateDpLimits(); syncSliderStyle(slider);
-    }
-
-    function syncDp(source) {
-        let input = document.getElementById('dp-input');
-        let slider = document.getElementById('dp-slider');
-        if (source === 'slider') { input.value = slider.value; triggerHaptic(); } 
-        else { slider.value = parseInt(input.value) || 0; }
-        syncSliderStyle(slider);
-    }
-
-    function correctInput(type) {
-        let priceInput = document.getElementById('price-input');
-        let dpInput = document.getElementById('dp-input');
-        if (type === 'price') {
-            let val = parseInt(priceInput.value) || 0;
-            if (val > 200000) priceInput.value = 200000;
-            if (val < 25000) priceInput.value = 25000;
-            syncPrice('input');
-        } else if (type === 'dp' && hasDownPayment) {
-            let val = parseInt(dpInput.value) || 0;
-            let maxDp = parseInt(document.getElementById('dp-slider').max);
-            if (val > maxDp) dpInput.value = maxDp;
-            if (val < 0) dpInput.value = 0;
-            syncDp('input');
-        }
-        fastUIUpdate();
-        calculate();
-    }
-
-    function updateDpLimits() {
-        let price = parseInt(document.getElementById('price-input').value) || 0;
-        let dpSlider = document.getElementById('dp-slider');
-        let dpInput = document.getElementById('dp-input');
-        let maxDp = Math.floor(price * 0.8); 
-        dpSlider.max = maxDp;
-        if (parseInt(dpInput.value) > maxDp) { dpInput.value = maxDp; dpSlider.value = maxDp; }
-        syncSliderStyle(dpSlider);
-    }
-
-    function showHalalInfo() {
-        let msg = currentLang === 'ru' ? 
-            "Договор Мурабаха.\nМы не выдаем деньги под проценты. Мы выкупаем товар и продаем его вам с фиксированной торговой наценкой. Никаких скрытых комиссий и пеней." : 
-            "Мурабаха барт.\nОха проценташца ахча ца ло. Оха товар оьций, тӀетоьхна махца шуна духку. Цхьа а къайлаха комиссеш йа гӀуданаш дац.";
-        tg.showAlert(msg);
-    }
-
-    // ГРАФИК ПЛАТЕЖЕЙ С ПЕРВЫМ ВЗНОСОМ
-    function generateSchedule(months, monthlyPayment, downPayment) {
-        let scheduleHTML = '';
-        let today = new Date();
         
-        // Первый взнос (сегодня)
-        if (hasDownPayment && downPayment > 0) {
-            let todayStr = today.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
-            scheduleHTML += `<div class="schedule-item dp-item"><span>${dict[currentLang].schedDp} (${todayStr})</span><span>${formatMoney(downPayment)} ₽</span></div>`;
-        }
-        
-        // Последующие платежи
-        for (let i = 1; i <= months; i++) {
-            let paymentDate = new Date(today.getFullYear(), today.getMonth() + i, today.getDate());
-            let dateStr = paymentDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
-            let term = `${i} ${dict[currentLang].schedPay}`;
-            scheduleHTML += `<div class="schedule-item"><span>${term} (${dateStr})</span><span>${formatMoney(monthlyPayment)} ₽</span></div>`;
-        }
-        document.getElementById('schedule-container').innerHTML = scheduleHTML;
+        syncSliderVisuals(elPriceSlider);
+        syncSliderVisuals(elDpSlider);
+        syncSliderVisuals(elMonthsSlider);
     }
 
-    function toggleSchedule() { document.getElementById('schedule-container').classList.toggle('open'); }
+    function formatMoney(amount) { return amount.toLocaleString('ru-RU').replace(/\s/g, '.'); }
 
-    // ПРОФЕССИОНАЛЬНОЕ СОХРАНЕНИЕ ЧЕКА
-    function downloadReceipt() {
-        const captureDiv = document.getElementById('receipt-capture');
-        const actionZone = document.getElementById('action-buttons-zone');
-        const scheduleBtn = document.getElementById('btn-schedule-toggle');
-        const scheduleContainer = document.getElementById('schedule-container');
-
-        let isScheduleOpen = scheduleContainer.classList.contains('open');
-
-        // Временно прячем кнопки для чистого скриншота
-        actionZone.style.display = 'none';
-        scheduleBtn.style.display = 'none';
-        scheduleContainer.classList.remove('open'); 
-
-        // Даем браузеру долю секунды на применение стилей
-        setTimeout(() => {
-            html2canvas(captureDiv, { 
-                backgroundColor: getComputedStyle(document.body).backgroundColor, 
-                scale: 2, 
-                useCORS: true 
-            }).then(canvas => {
-                let link = document.createElement('a');
-                link.download = `Рассрочка_${new Date().toLocaleDateString('ru-RU')}.png`;
-                link.href = canvas.toDataURL("image/png"); 
-                link.click();
-                
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }).finally(() => {
-                // Возвращаем интерфейс обратно
-                actionZone.style.display = 'flex';
-                scheduleBtn.style.display = 'flex';
-                if (isScheduleOpen) {
-                    scheduleContainer.classList.add('open');
-                }
-            });
-        }, 300); 
-    }
-
-    // ПЕРЕХОД В WHATSAPP (Точная ссылка)
-    function openWhatsApp() { 
-        let price = document.getElementById('price-input').value;
-        let dp = hasDownPayment ? document.getElementById('dp-input').value : 0;
-        let months = document.getElementById('months-slider').value;
-        let text = `Здравствуйте! Хочу оформить рассрочку.\nТовар: ${formatMoney(parseInt(price))} руб.\nВзнос: ${formatMoney(parseInt(dp))} руб.\nСрок: ${months} мес.`;
-        window.open(`https://wa.me/79339480095?text=${encodeURIComponent(text)}`, "_blank"); 
-    }
-
-    window.onload = function() {
-        let startPrice = parseInt(document.getElementById('price-input').value);
-        document.getElementById('dp-input').value = Math.floor(startPrice * 0.25);
-        updateDpLimits(); syncDp('input');
-        syncSliderStyle(document.getElementById('price-slider'));
-        syncSliderStyle(document.getElementById('months-slider'));
-        fastUIUpdate();
-        calculate(); 
-    };
-
-    function calculate() {
-        let price = parseInt(document.getElementById('price-input').value) || 0;
-        let months = parseInt(document.getElementById('months-slider').value) || 3;
-        let dp = hasDownPayment ? (parseInt(document.getElementById('dp-input').value) || 0) : 0;
+    // ТЯЖЕЛЫЕ РАСЧЕТЫ И ГРАФИК
+    function calculateFinal() {
+        let price = parseInt(elPriceInput.value) || 0;
+        let months = parseInt(elMonthsSlider.value) || 3;
+        let dp = hasDownPayment ? (parseInt(elDpInput.value) || 0) : 0;
         let dpPercent = price > 0 ? Math.round((dp / price) * 100) : 0;
         
-        if (price < 25000) { document.getElementById('receipt-capture').style.display = 'none'; return; }
+        if (price < 6000) { document.getElementById('receipt-capture').style.opacity = '0.3'; return; }
+        document.getElementById('receipt-capture').style.opacity = '1';
 
         let financedAmount = price - dp; 
         let monthlyRate = 0.04; 
@@ -513,10 +571,9 @@
         let totalInstallmentPrice = remainingDebt + dp;   
 
         let curStr = dict[currentLang].rub;
-        let monthStr = `${months} ${dict[currentLang].monthWord}`;
         
         document.getElementById('res-price').innerText = `${formatMoney(price)} ${curStr}`;
-        document.getElementById('res-months').innerText = monthStr;
+        document.getElementById('res-months').innerText = `${months} ${dict[currentLang].monthWord}`;
         document.getElementById('res-dp-percent').innerText = hasDownPayment ? `${dpPercent} %` : '—';
         document.getElementById('res-monthly').innerText = `${formatMoney(finalMonthlyPayment)} ${curStr}`;
         document.getElementById('res-dp-rub').innerText = `${formatMoney(dp)} ${curStr}`;
@@ -524,8 +581,83 @@
         document.getElementById('res-total').innerText = `${formatMoney(totalInstallmentPrice)} ₽`;
 
         generateSchedule(months, finalMonthlyPayment, dp);
-        document.getElementById('receipt-capture').style.display = 'block';
     }
+
+    function generateSchedule(months, monthlyPayment, downPayment) {
+        let html = '';
+        let today = new Date();
+        
+        if (hasDownPayment && downPayment > 0) {
+            let dStr = today.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
+            html += `<div class="schedule-item dp-item"><span>${dict[currentLang].schedDp} (${dStr})</span><span>${formatMoney(downPayment)} ₽</span></div>`;
+        }
+        
+        for (let i = 1; i <= months; i++) {
+            let d = new Date(today.getFullYear(), today.getMonth() + i, today.getDate());
+            let dStr = d.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
+            html += `<div class="schedule-item"><span>${i} ${dict[currentLang].schedPay} (${dStr})</span><span>${formatMoney(monthlyPayment)} ₽</span></div>`;
+        }
+        document.getElementById('schedule-container').innerHTML = html;
+    }
+
+    function toggleSchedule() { document.getElementById('schedule-container').classList.toggle('open'); }
+
+    // СОХРАНЕНИЕ
+    function downloadReceipt() {
+        const captureDiv = document.getElementById('receipt-capture');
+        const actionZone = document.getElementById('action-buttons-zone');
+        const scheduleBtn = document.getElementById('btn-schedule-toggle');
+        const scheduleContainer = document.getElementById('schedule-container');
+
+        let isScheduleOpen = scheduleContainer.classList.contains('open');
+        actionZone.style.display = 'none';
+        scheduleBtn.style.display = 'none';
+        scheduleContainer.classList.remove('open'); 
+
+        setTimeout(() => {
+            html2canvas(captureDiv, { backgroundColor: getComputedStyle(document.body).backgroundColor, scale: 2, useCORS: true }).then(canvas => {
+                let imgData = canvas.toDataURL("image/png");
+                document.getElementById('render-img').src = imgData;
+                
+                canvas.toBlob(blob => {
+                    currentBlob = blob;
+                    if (navigator.share) document.getElementById('btn-share').style.display = 'block';
+                });
+
+                document.getElementById('save-modal').classList.add('active');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }).finally(() => {
+                actionZone.style.display = 'flex';
+                scheduleBtn.style.display = 'flex';
+                if (isScheduleOpen) scheduleContainer.classList.add('open');
+            });
+        }, 300); 
+    }
+
+    function closeModal() { document.getElementById('save-modal').classList.remove('active'); }
+
+    function shareImage() {
+        if (navigator.share && currentBlob) {
+            const file = new File([currentBlob], "Mubaraka_Check.png", { type: "image/png" });
+            navigator.share({ files: [file], title: 'Чек рассрочки', text: 'Расчет по договору Мубарака' }).catch(e => console.log(e));
+        }
+    }
+
+    function openWhatsApp() { 
+        let text = `Здравствуйте! Хочу оформить рассрочку.\nТовар: ${formatMoney(parseInt(elPriceInput.value))} руб.\nВзнос: ${hasDownPayment ? formatMoney(parseInt(elDpInput.value)) : 0} руб.\nСрок: ${elMonthsSlider.value} мес.`;
+        window.open(`https://wa.me/79339480095?text=${encodeURIComponent(text)}`, "_blank"); 
+    }
+
+    function showHalalInfo() {
+        tg.showAlert(currentLang === 'ru' ? "Договор Мубарака.\nМы не выдаем деньги под проценты. Мы выкупаем товар и продаем его вам с фиксированной торговой наценкой. Никаких скрытых комиссий и пеней." : "Мубарака барт.\nОха проценташца ахча ца ло. Оха товар оьций, тӀетоьхна махца шуна духку.");
+    }
+
+    // ИНИЦИАЛИЗАЦИЯ
+    window.onload = function() {
+        updateDpState(); // Устанавливаем изначальные лимиты процентов
+        requestAnimationFrame(updateUI);
+        calculateFinal(); 
+    };
 </script>
 </body>
 </html>
