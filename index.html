@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Mubaraka Installment</title>
+    <title>Mubarak Installment</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -23,6 +23,68 @@
             --info-bg: #f0f9ff;
             --info-text: #0284c7;
         }
+
+        /* КОРОЛЕВСКИЙ ЗОЛОТОЙ СТИЛЬ (АДМИН) */
+        body.admin-theme {
+            --bg-body: #0b1120; /* Глубокий темно-синий / Королевский синий */
+            --card-bg: #111827;
+            --text-main: #fdf6e3; /* Жемчужный белый */
+            --text-muted: #c9a86a; /* Античное золото */
+            --primary: #dfb15b; /* Яркое золото */
+            --primary-light: rgba(223, 177, 91, 0.15);
+            --track-bg: #1f2937;
+            --divider: rgba(223, 177, 91, 0.15);
+            --receipt-bg: #0b1120;
+            --btn-secondary: #1f2937;
+            --btn-secondary-text: #dfb15b;
+            --info-bg: rgba(223, 177, 91, 0.1);
+            --info-text: #dfb15b;
+            
+            /* Царский фон с узором */
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(223, 177, 91, 0.15) 0%, transparent 70%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dfb15b' fill-opacity='0.04'%3E%3Cpath d='M30 0l30 30-30 30L0 30zM15 30l15-15 15 15-15 15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        body.admin-theme .card {
+            border: 1px solid rgba(223, 177, 91, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(223, 177, 91, 0.05);
+            background: linear-gradient(145deg, #111827, #0b1120);
+        }
+        
+        body.admin-theme .result-card { border-color: #dfb15b; box-shadow: 0 0 25px rgba(223, 177, 91, 0.15); }
+        body.admin-theme .result-header { background: linear-gradient(to right, rgba(223,177,91,0.05), transparent); }
+        body.admin-theme .result-total-zone { border-top-color: rgba(223, 177, 91, 0.3); }
+        body.admin-theme .check-row .dots { border-bottom-color: rgba(223, 177, 91, 0.2); }
+        
+        body.admin-theme .requirements-card {
+            background: linear-gradient(135deg, #dfb15b 0%, #b38531 100%);
+            color: #0b1120;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        body.admin-theme .requirements-card ul li::before { color: #0b1120; }
+        
+        body.admin-theme input[type="range"]::-webkit-slider-thumb {
+            background: #111827;
+            border: 3px solid #dfb15b;
+            box-shadow: 0 4px 15px rgba(223, 177, 91, 0.5);
+        }
+        
+        @keyframes pulse-gold { 
+            0% { box-shadow: 0 0 0 0 rgba(223, 177, 91, 0.5); } 
+            70% { box-shadow: 0 0 0 12px rgba(223, 177, 91, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(223, 177, 91, 0); } 
+        }
+
+        body.admin-theme .btn-whatsapp {
+            background: linear-gradient(135deg, #dfb15b, #b38531);
+            color: #0b1120;
+            font-weight: 800;
+            animation: pulse-gold 2s infinite;
+            border: none;
+        }
         
         body {
             font-family: 'Inter', -apple-system, sans-serif;
@@ -33,7 +95,7 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             letter-spacing: -0.3px;
-            transition: background-color 0.3s;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
         
         .container { max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
@@ -50,20 +112,17 @@
             display: inline-flex; align-items: center; gap: 6px;
             background: rgba(5, 150, 105, 0.1); color: var(--primary);
             padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700;
-            margin-bottom: 20px; cursor: pointer; border: 1px solid rgba(5, 150, 105, 0.2);
-            transition: transform 0.1s;
+            margin-bottom: 24px; cursor: pointer; border: 1px solid rgba(5, 150, 105, 0.2);
+            transition: transform 0.1s, background 0.3s, border-color 0.3s, color 0.3s;
         }
         .halal-badge:active { transform: scale(0.96); }
-
-        /* TABS */
-        .tabs-container { background: var(--track-bg); padding: 4px; border-radius: 12px; display: flex; margin-bottom: 24px; position: relative; }
-        .tab { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; z-index: 2; transition: all 0.3s; }
-        .tab.active { color: var(--text-main); }
-        .tab-slider { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: var(--card-bg); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; }
-        .tab.disabled { opacity: 0.4; pointer-events: none; }
+        body.admin-theme .halal-badge {
+            background: rgba(223, 177, 91, 0.1);
+            border-color: rgba(223, 177, 91, 0.3);
+        }
 
         /* CARDS */
-        .card { background: var(--card-bg); padding: 24px; border-radius: 20px; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04); margin-bottom: 16px; }
+        .card { background: var(--card-bg); padding: 24px; border-radius: 20px; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04); margin-bottom: 16px; transition: background 0.4s, border 0.4s, box-shadow 0.4s; }
         .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 28px; }
         .label-row.first { margin-top: 0; }
         label { font-weight: 600; font-size: 14px; color: var(--text-muted); }
@@ -86,7 +145,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
         /* INPUTS & SLIDERS */
-        .price-input-wrapper { display: flex; align-items: center; background: var(--bg-body); border: 2px solid transparent; border-radius: 14px; padding: 14px 18px; transition: border-color 0.2s, background-color 0.2s; }
+        .price-input-wrapper { display: flex; align-items: center; background: var(--bg-body); border: 2px solid transparent; border-radius: 14px; padding: 14px 18px; transition: border-color 0.2s, background-color 0.4s; }
         .price-input-wrapper:focus-within { border-color: var(--primary); background: var(--card-bg); }
         .price-input-wrapper input { width: 100%; border: none; background: transparent; font-size: 20px; font-weight: 800; color: var(--text-main); outline: none; font-variant-numeric: tabular-nums; }
         .price-input-wrapper span { font-size: 18px; font-weight: 700; color: var(--text-muted); margin-left: 8px; }
@@ -99,49 +158,60 @@
             border-radius: 8px; 
             outline: none; 
             margin: 24px 0 10px 0; 
-            touch-action: none; /* Запрет скролла при касании ползунка (исправляет зависание) */
+            touch-action: none; 
         }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; border: 3px solid var(--primary); cursor: pointer; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #ffffff; border: 3px solid var(--primary); cursor: pointer; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); transition: background 0.4s, border-color 0.4s, box-shadow 0.4s; }
         .limits-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         
-        #dp-container { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 300px; opacity: 1; }
-        #dp-container.hidden { max-height: 0; opacity: 0; margin-top: -10px; pointer-events: none; }
-
         /* REQUIREMENTS */
-        .requirements-card { background: linear-gradient(145deg, var(--primary), #047857); color: white; }
+        .requirements-card { background: linear-gradient(145deg, var(--primary), #047857); color: white; transition: background 0.4s; }
         .requirements-card h4 { margin: 0 0 16px 0; font-size: 15px; font-weight: 700; }
         .requirements-card ul { margin: 0; padding-left: 0; list-style: none; font-size: 13px; line-height: 1.8; font-weight: 500; }
         .requirements-card ul li { position: relative; padding-left: 20px; }
         .requirements-card ul li::before { content: "✓"; position: absolute; left: 0; color: #6ee7b7; font-weight: bold; }
 
         /* RECEIPT CARD */
-        .result-card { padding: 0; border: 1px solid var(--track-bg); display: block; opacity: 1; transition: opacity 0.3s; overflow: hidden;}
-        .result-header { padding: 24px 24px 16px 24px; background: var(--card-bg); border-radius: 20px 20px 0 0; }
+        .result-card { padding: 0; border: 1px solid var(--track-bg); display: block; opacity: 1; transition: opacity 0.3s, border-color 0.4s; overflow: hidden;}
+        .result-header { padding: 24px 24px 16px 24px; background: var(--card-bg); border-radius: 20px 20px 0 0; transition: background 0.4s; }
         .result-header h3 { margin: 0 0 20px 0; font-size: 18px; color: var(--text-main); }
         .check-row { display: flex; align-items: baseline; margin-bottom: 14px; font-size: 13px; color: var(--text-muted); }
         .check-row.bold { font-size: 14px; color: var(--text-main); font-weight: 700; margin-bottom: 16px; }
         .check-row .label { white-space: nowrap; }
-        .check-row .dots { flex-grow: 1; border-bottom: 2px dotted #cbd5e1; margin: 0 12px; position: relative; top: -3px; opacity: 0.6; }
+        .check-row .dots { flex-grow: 1; border-bottom: 2px dotted #cbd5e1; margin: 0 12px; position: relative; top: -3px; opacity: 0.6; transition: border-color 0.4s; }
         .check-row .value { white-space: nowrap; font-variant-numeric: tabular-nums; }
         
-        .result-total-zone { background: var(--receipt-bg); padding: 24px; border-top: 2px dashed #cbd5e1; border-radius: 0; }
+        .result-total-zone { background: var(--receipt-bg); padding: 24px; border-top: 2px dashed #cbd5e1; border-radius: 0; transition: background 0.4s, border-color 0.4s; }
         .total-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
         .total-price-label { font-size: 16px; font-weight: 700; color: var(--text-muted); }
-        .total-price-value { font-size: 24px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; transition: color 0.3s;}
+        .total-price-value { font-size: 24px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums;}
 
         /* SCHEDULE */
-        .schedule-btn { width: 100%; background: none; border: 1px solid var(--primary); color: var(--primary); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-top: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: background 0.2s; }
+        .schedule-btn { width: 100%; background: none; border: 1px solid var(--primary); color: var(--primary); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-top: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: border-color 0.4s, color 0.4s; }
         .schedule-list { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .schedule-list.open { max-height: 1200px; margin-top: 16px; transition: max-height 0.5s ease-in; }
-        .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--track-bg); font-size: 13px; color: var(--text-main); font-variant-numeric: tabular-nums;}
+        .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--track-bg); font-size: 13px; color: var(--text-main); font-variant-numeric: tabular-nums; transition: border-color 0.4s; }
         .schedule-item:last-child { border-bottom: none; padding-bottom: 0; }
         .schedule-item.dp-item { font-weight: 700; color: var(--primary); border-bottom: 2px solid var(--track-bg); padding-bottom: 14px; margin-bottom: 6px; }
         
         /* ACTION BUTTONS */
-        .action-buttons { display: flex; gap: 10px; padding: 20px 24px; background: var(--card-bg); border-top: 1px solid var(--track-bg); border-radius: 0 0 20px 20px;}
+        .action-buttons { display: flex; gap: 10px; padding: 20px 24px; background: var(--card-bg); border-top: 1px solid var(--track-bg); border-radius: 0 0 20px 20px; transition: background 0.4s, border-color 0.4s; }
         .btn-icon { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; cursor: pointer;}
         @keyframes pulse-wa { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
-        .btn-whatsapp { background: #25D366; color: white; animation: pulse-wa 2s infinite; width: 100%;}
+        .btn-whatsapp { background: #25D366; color: white; animation: pulse-wa 2s infinite; width: 100%; transition: background 0.4s, color 0.4s; }
+
+        /* ADMIN MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card { background: var(--card-bg); padding: 24px; border-radius: 20px; width: 90%; max-width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .modal-card h3 { margin: 0 0 8px 0; font-size: 18px; color: var(--text-main); text-align: center; }
+        .modal-card p { margin: 0 0 20px 0; font-size: 13px; color: var(--text-muted); text-align: center; }
+        .modal-card input { width: 100%; padding: 14px; border: 2px solid var(--track-bg); border-radius: 12px; font-size: 24px; text-align: center; font-weight: 800; margin-bottom: 20px; outline: none; background: var(--bg-body); color: var(--text-main); box-sizing: border-box; letter-spacing: 8px; font-variant-numeric: tabular-nums; transition: border-color 0.2s; }
+        .modal-card input:focus { border-color: var(--primary); }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
+        .btn-cancel { background: var(--btn-secondary); color: var(--btn-secondary-text); }
+        .btn-submit { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
@@ -150,7 +220,7 @@
     
     <div class="header-top">
         <h2>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16.01" y2="14"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="16" y1="18" x2="16.01" y2="18"></line><line x1="12" y1="18" x2="12.01" y2="18"></line><line x1="8" y1="18" x2="8.01" y2="18"></line></svg>
+            <svg id="calc-icon" onclick="openAdminModal()" style="cursor:pointer; transition: color 0.4s;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16.01" y2="14"></line><line x1="12" y1="14" x2="12.01" y2="14"></line><line x1="8" y1="14" x2="8.01" y2="14"></line><line x1="16" y1="18" x2="16.01" y2="18"></line><line x1="12" y1="18" x2="12.01" y2="18"></line><line x1="8" y1="18" x2="8.01" y2="18"></line></svg>
             <span id="t-title">Калькулятор</span>
         </h2>
         <div class="lang-toggle">
@@ -161,28 +231,22 @@
 
     <div class="halal-badge" onclick="showHalalInfo()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        <span id="t-halal">100% Халяль (Мубарака)</span>
+        <span id="t-halal">100% Халяль (Mubarak)</span>
     </div>
 
     <div class="card">
-        <div class="tabs-container">
-            <div class="tab-slider" id="tab-bg"></div>
-            <div class="tab active" id="tab-with-dp" onclick="setDpMode(true)"><span id="t-tab-with">С первым взносом</span></div>
-            <div class="tab" id="tab-no-dp" onclick="setDpMode(false)"><span id="t-tab-no">Без взноса</span></div>
-        </div>
-
         <div class="label-row first">
             <label id="t-price-lbl">Стоимость товара</label>
         </div>
         <div class="price-input-wrapper">
-            <input type="number" id="price-input" value="110000" oninput="handleInput('price')" onblur="handleBlur('price')">
+            <input type="number" id="price-input" value="110000" enterkeyhint="done" onkeydown="if(event.key==='Enter') this.blur()" oninput="handleInput('price')" onblur="handleBlur('price')">
             <span id="t-rub1">руб.</span>
         </div>
         
         <input type="range" id="price-slider" min="6000" max="200000" step="1000" value="110000" oninput="handleSlider('price')" onchange="handleRelease()">
         <div class="limits-text">
-            <span>6.000</span>
-            <span>200.000</span>
+            <span id="price-min-lbl">6.000</span>
+            <span id="price-max-lbl">200.000</span>
         </div>
         
         <div class="label-row">
@@ -196,17 +260,17 @@
                 <label id="t-dp-lbl">Первоначальный взнос</label>
                 <span class="val-badge" id="dp-badge" style="color: var(--primary);">25 %</span>
             </div>
-            <div id="dp-input-box" class="price-input-wrapper" style="padding: 10px 18px;">
-                <input type="number" id="dp-input" value="27500" step="100" oninput="handleInput('dp')" onblur="handleBlur('dp')">
+            <div class="price-input-wrapper" style="padding: 10px 18px;">
+                <input type="number" id="dp-input" value="27500" step="100" enterkeyhint="done" onkeydown="if(event.key==='Enter') this.blur()" oninput="handleInput('dp')" onblur="handleBlur('dp')">
                 <span id="t-rub2">руб.</span>
             </div>
             
             <div id="dp-warning" class="info-text">ℹ️ При сумме от 100 000 руб. минимальный взнос 25%</div>
             
-            <input type="range" id="dp-slider" min="0" max="80" value="25" step="1" oninput="handleSlider('dp')" onchange="handleRelease()">
+            <input type="range" id="dp-slider" min="0" max="100" value="25" step="1" oninput="handleSlider('dp')" onchange="handleRelease()">
             <div class="limits-text">
                 <span id="dp-min-lbl">0%</span>
-                <span id="dp-max-lbl">80%</span>
+                <span id="dp-max-lbl">100%</span>
             </div>
         </div>
     </div>
@@ -257,12 +321,23 @@
     </div>
 </div>
 
+<div id="admin-modal" class="modal-overlay">
+    <div class="modal-card">
+        <h3>Доступ PRO</h3>
+        <p>Введите код для снятия лимитов</p>
+        <input type="password" id="admin-pin" placeholder="••••" enterkeyhint="done" onkeydown="if(event.key==='Enter') checkAdminPin()">
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="closeAdminModal()">Отмена</button>
+            <button class="btn-submit" onclick="checkAdminPin()">Войти</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
     if(tg.MainButton) tg.MainButton.hide();
 
-    // DARK MODE COLORS
     if (tg.colorScheme === 'dark') {
         document.documentElement.style.setProperty('--bg-body', '#0f172a');
         document.documentElement.style.setProperty('--card-bg', '#1e293b');
@@ -278,7 +353,7 @@
 
     const dict = {
         ru: {
-            title: "Калькулятор", halal: "100% Халяль (Мубарака)", tabWith: "С первым взносом", tabNo: "Без взноса",
+            title: "Калькулятор", halal: "100% Халяль (Mubarak)",
             priceLbl: "Стоимость товара", monthsLbl: "Срок рассрочки", dpLbl: "Первоначальный взнос", rub: "руб.",
             reqTitle: "Требования к клиенту", req1: "Паспорт РФ", req2: "Постоянная регистрация в ЧР", req3: "Возраст от 20 лет", req4: "Поручитель",
             resTitle: "Результат расчета", rPrice: "Стоимость Товара", rMonths: "Срок Рассрочки", rDp: "Первоначальный Взнос",
@@ -288,7 +363,7 @@
             dpInfoText: "ℹ️ При сумме от 100 000 руб. минимальный взнос 25%"
         },
         ce: {
-            title: "Калькулятор", halal: "100% Хьанал (Мубарака)", tabWith: "Взносца", tabNo: "Взнос йоцуш",
+            title: "Калькулятор", halal: "100% Хьанал (Mubarak)",
             priceLbl: "Товаран мах", monthsLbl: "Рассрочкин хан", dpLbl: "Хьалхара взнос", rub: "сом",
             reqTitle: "Клиенте йолу требованеш", req1: "РФ Паспорт", req2: "Нохчийчохь регистраци", req3: "20 шо кхаьчна хилар", req4: "Поручитель",
             resTitle: "Расчётан жамӀ", rPrice: "Товаран мах", rMonths: "Рассрочкин хан", rDp: "Хьалхара взнос",
@@ -300,14 +375,50 @@
     };
 
     let currentLang = 'ru';
-    let hasDownPayment = true;
     let lastHapticTime = 0;
+    let isAdmin = false;
     
     const elPriceInput = document.getElementById('price-input');
     const elPriceSlider = document.getElementById('price-slider');
     const elDpInput = document.getElementById('dp-input');
     const elDpSlider = document.getElementById('dp-slider');
     const elMonthsSlider = document.getElementById('months-slider');
+
+    function openAdminModal() {
+        if (isAdmin) return;
+        document.getElementById('admin-modal').classList.add('active');
+        setTimeout(() => document.getElementById('admin-pin').focus(), 100);
+    }
+
+    function closeAdminModal() {
+        document.getElementById('admin-modal').classList.remove('active');
+        document.getElementById('admin-pin').value = '';
+    }
+
+    function checkAdminPin() {
+        const pin = document.getElementById('admin-pin').value;
+        if (pin === '0908') {
+            isAdmin = true;
+            closeAdminModal();
+            haptic();
+            
+            document.body.classList.add('admin-theme');
+            
+            elMonthsSlider.min = 2;
+            elMonthsSlider.max = 24;
+            elPriceSlider.max = 500000;
+            document.getElementById('price-max-lbl').innerText = '500.000';
+            
+            updateDpState();
+            updateUI();
+            calculateFinal();
+        } else {
+            haptic();
+            let inputEl = document.getElementById('admin-pin');
+            inputEl.style.borderColor = '#ef4444';
+            setTimeout(() => { inputEl.style.borderColor = 'var(--track-bg)'; }, 500);
+        }
+    }
 
     function switchLang(lang) {
         currentLang = lang;
@@ -316,8 +427,6 @@
         
         document.getElementById('t-title').innerText = dict[lang].title;
         document.getElementById('t-halal').innerText = dict[lang].halal;
-        document.getElementById('t-tab-with').innerText = dict[lang].tabWith;
-        document.getElementById('t-tab-no').innerText = dict[lang].tabNo;
         document.getElementById('t-price-lbl').innerText = dict[lang].priceLbl;
         document.getElementById('t-months-lbl').innerText = dict[lang].monthsLbl;
         document.getElementById('t-dp-lbl').innerText = dict[lang].dpLbl;
@@ -339,14 +448,14 @@
         document.getElementById('t-btn-schedule').innerText = dict[lang].btnSchedule;
         document.getElementById('dp-warning').innerText = dict[lang].dpInfoText;
         
-        requestAnimationFrame(updateUI);
+        updateUI();
         calculateFinal(); 
     }
 
     function updateDpState() {
         let price = parseInt(elPriceInput.value) || 0;
-        let minPct = price >= 100000 ? 25 : 0;
-        let maxPct = 80;
+        let minPct = (price >= 100000 && !isAdmin) ? 25 : 0;
+        let maxPct = 100;
 
         elDpSlider.min = minPct;
         elDpSlider.max = maxPct;
@@ -354,22 +463,10 @@
         document.getElementById('dp-max-lbl').innerText = maxPct + '%';
 
         let dpWarning = document.getElementById('dp-warning');
-        if (price >= 100000) {
+        if (price >= 100000 && !isAdmin) {
             dpWarning.style.display = 'flex';
-            document.getElementById('tab-no-dp').classList.add('disabled');
-            
-            if (!hasDownPayment) {
-                hasDownPayment = true;
-                document.getElementById('tab-bg').style.transform = 'translateX(0)';
-                document.getElementById('tab-with-dp').classList.add('active');
-                document.getElementById('tab-no-dp').classList.remove('active');
-                document.getElementById('dp-container').classList.remove('hidden');
-                document.getElementById('res-dp-rub-row').style.display = 'flex';
-                document.getElementById('t-r-dp').innerText = dict[currentLang].rDp;
-            }
         } else {
             dpWarning.style.display = 'none';
-            document.getElementById('tab-no-dp').classList.remove('disabled');
         }
 
         let currentPct = parseInt(elDpSlider.value) || 0;
@@ -378,40 +475,16 @@
         elDpSlider.value = currentPct;
 
         let rub = Math.floor(price * (currentPct / 100));
-        rub = Math.round(rub / 100) * 100;
+        if(!isAdmin) rub = Math.round(rub / 100) * 100;
         elDpInput.value = rub;
 
         syncSliderVisuals(elDpSlider);
     }
 
-    function setDpMode(withDp) {
-        let price = parseInt(elPriceInput.value) || 0;
-        if (!withDp && price >= 100000) return; 
-
-        hasDownPayment = withDp;
-        haptic();
-        document.getElementById('tab-bg').style.transform = withDp ? 'translateX(0)' : 'translateX(100%)';
-        document.getElementById('tab-with-dp').classList.toggle('active', withDp);
-        document.getElementById('tab-no-dp').classList.toggle('active', !withDp);
-        
-        if (withDp) {
-            document.getElementById('dp-container').classList.remove('hidden');
-            document.getElementById('res-dp-rub-row').style.display = 'flex';
-            document.getElementById('t-r-dp').innerText = dict[currentLang].rDp;
-        } else {
-            document.getElementById('dp-container').classList.add('hidden');
-            document.getElementById('res-dp-rub-row').style.display = 'none';
-            document.getElementById('t-r-dp').innerText = dict[currentLang].tabNo;
-        }
-        
-        requestAnimationFrame(updateUI);
-        calculateFinal();
-    }
-
     function haptic() {
         if (!tg.HapticFeedback) return;
         let now = Date.now();
-        if (now - lastHapticTime > 100) { 
+        if (now - lastHapticTime > 150) { 
             tg.HapticFeedback.selectionChanged();
             lastHapticTime = now;
         }
@@ -440,7 +513,8 @@
             elDpSlider.value = pct; 
             syncSliderVisuals(elDpSlider);
         }
-        requestAnimationFrame(updateUI);
+        updateUI();
+        calculateFinal();
     }
 
     function handleSlider(type) {
@@ -452,20 +526,24 @@
             let price = parseInt(elPriceInput.value) || 0;
             let pct = parseInt(elDpSlider.value) || 0;
             let rub = Math.floor(price * (pct / 100));
-            rub = Math.round(rub / 100) * 100;
+            if(!isAdmin) rub = Math.round(rub / 100) * 100;
             elDpInput.value = rub;
             syncSliderVisuals(elDpSlider);
         } else if (type === 'months') {
             syncSliderVisuals(elMonthsSlider);
         }
-        requestAnimationFrame(updateUI);
+        updateUI();
+        calculateFinal();
     }
 
     function handleBlur(type) {
         if (type === 'price') {
             let val = parseInt(elPriceInput.value) || 0;
-            if (val > 200000) val = 200000;
-            if (val < 6000) val = 6000;
+            let maxP = isAdmin ? 500000 : 200000;
+            let minP = isAdmin ? 1000 : 6000;
+            
+            if (val > maxP) val = maxP;
+            if (val < minP) val = minP;
             elPriceInput.value = val;
             elPriceSlider.value = val;
             updateDpState();
@@ -473,19 +551,19 @@
             let price = parseInt(elPriceInput.value) || 0;
             let rub = parseInt(elDpInput.value) || 0;
             
-            let minPct = price >= 100000 ? 25 : 0;
+            let minPct = (price >= 100000 && !isAdmin) ? 25 : 0;
             let minRub = Math.floor(price * (minPct / 100));
-            let maxRub = Math.floor(price * 0.8);
+            let maxRub = isAdmin ? price : Math.floor(price * 0.8);
             
             if (rub < minRub) rub = minRub;
             if (rub > maxRub) rub = maxRub;
             
-            rub = Math.round(rub / 100) * 100;
+            if(!isAdmin) rub = Math.round(rub / 100) * 100;
             elDpInput.value = rub;
-            elDpSlider.value = (rub / price) * 100;
+            elDpSlider.value = price > 0 ? (rub / price) * 100 : 0;
             syncSliderVisuals(elDpSlider);
         }
-        requestAnimationFrame(updateUI);
+        updateUI();
         calculateFinal();
     }
 
@@ -496,11 +574,11 @@
     function updateUI() {
         let price = parseInt(elPriceInput.value) || 0;
         let months = parseInt(elMonthsSlider.value) || 3;
-        let rubDp = hasDownPayment ? (parseInt(elDpInput.value) || 0) : 0;
+        let rubDp = parseInt(elDpInput.value) || 0;
         let dpPercent = price > 0 ? Math.round((rubDp / price) * 100) : 0;
 
         document.getElementById('months-val').innerText = `${months} ${dict[currentLang].monthWord}`;
-        document.getElementById('dp-badge').innerText = hasDownPayment ? `${dpPercent} %` : '0 %';
+        document.getElementById('dp-badge').innerText = `${dpPercent} %`;
         
         syncSliderVisuals(elPriceSlider);
         syncSliderVisuals(elDpSlider);
@@ -512,16 +590,37 @@
     function calculateFinal() {
         let price = parseInt(elPriceInput.value) || 0;
         let months = parseInt(elMonthsSlider.value) || 3;
-        let dp = hasDownPayment ? (parseInt(elDpInput.value) || 0) : 0;
-        let dpPercent = price > 0 ? Math.round((dp / price) * 100) : 0;
+        let dp = parseInt(elDpInput.value) || 0;
         
-        if (price < 6000) { document.getElementById('receipt-capture').style.opacity = '0.3'; return; }
+        let minDp = (price >= 100000 && !isAdmin) ? Math.floor(price * 0.25) : 0;
+        let dpWarning = document.getElementById('dp-warning');
+
+        if (price >= 100000 && dp < minDp && !isAdmin) {
+            dpWarning.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            dpWarning.style.color = '#ef4444';
+        } else {
+            dpWarning.style.backgroundColor = 'var(--info-bg)';
+            dpWarning.style.color = 'var(--info-text)';
+        }
+
+        let dpPercent = price > 0 ? Math.round((dp / price) * 100) : 0;
+        let minPriceLimit = isAdmin ? 1000 : 6000;
+        
+        if (price < minPriceLimit || dp < minDp) { 
+            document.getElementById('receipt-capture').style.opacity = '0.3'; 
+            document.getElementById('receipt-capture').style.pointerEvents = 'none'; 
+            return; 
+        }
+        
         document.getElementById('receipt-capture').style.opacity = '1';
+        document.getElementById('receipt-capture').style.pointerEvents = 'auto';
 
         let financedAmount = price - dp; 
         let monthlyRate = 0.04; 
         let rawTotalDebt = financedAmount + (financedAmount * monthlyRate * months);
         let finalMonthlyPayment = Math.ceil((rawTotalDebt / months) / 50) * 50; 
+        if(financedAmount <= 0) finalMonthlyPayment = 0;
+        
         let remainingDebt = finalMonthlyPayment * months; 
         let totalMarkup = remainingDebt - financedAmount; 
         let totalInstallmentPrice = remainingDebt + dp;   
@@ -530,7 +629,11 @@
         
         document.getElementById('res-price').innerText = `${formatMoney(price)} ${curStr}`;
         document.getElementById('res-months').innerText = `${months} ${dict[currentLang].monthWord}`;
-        document.getElementById('res-dp-percent').innerText = hasDownPayment ? `${dpPercent} %` : '—';
+        document.getElementById('res-dp-percent').innerText = `${dpPercent} %`;
+        
+        // Скрываем строку взноса в чеке если он 0
+        document.getElementById('res-dp-rub-row').style.display = dp > 0 ? 'flex' : 'none';
+        
         document.getElementById('res-monthly').innerText = `${formatMoney(finalMonthlyPayment)} ${curStr}`;
         document.getElementById('res-dp-rub').innerText = `${formatMoney(dp)} ${curStr}`;
         document.getElementById('res-markup').innerText = `${formatMoney(totalMarkup)} ${curStr}`;
@@ -543,15 +646,17 @@
         let html = '';
         let today = new Date();
         
-        if (hasDownPayment && downPayment > 0) {
+        if (downPayment > 0) {
             let dStr = today.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
             html += `<div class="schedule-item dp-item"><span>${dict[currentLang].schedDp} (${dStr})</span><span>${formatMoney(downPayment)} ₽</span></div>`;
         }
         
-        for (let i = 1; i <= months; i++) {
-            let d = new Date(today.getFullYear(), today.getMonth() + i, today.getDate());
-            let dStr = d.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
-            html += `<div class="schedule-item"><span>${i} ${dict[currentLang].schedPay} (${dStr})</span><span>${formatMoney(monthlyPayment)} ₽</span></div>`;
+        if (monthlyPayment > 0) {
+            for (let i = 1; i <= months; i++) {
+                let d = new Date(today.getFullYear(), today.getMonth() + i, today.getDate());
+                let dStr = d.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', year: 'numeric'});
+                html += `<div class="schedule-item"><span>${i} ${dict[currentLang].schedPay} (${dStr})</span><span>${formatMoney(monthlyPayment)} ₽</span></div>`;
+            }
         }
         document.getElementById('schedule-container').innerHTML = html;
     }
@@ -559,17 +664,18 @@
     function toggleSchedule() { document.getElementById('schedule-container').classList.toggle('open'); }
 
     function openWhatsApp() { 
-        let text = `Ассаламу 1алайкум! Хочу оформить рассрочку.\nТовар: ${formatMoney(parseInt(elPriceInput.value))} руб.\nВзнос: ${hasDownPayment ? formatMoney(parseInt(elDpInput.value)) : 0} руб.\nСрок: ${elMonthsSlider.value} мес.`;
+        let dp = parseInt(elDpInput.value) || 0;
+        let text = `Ассаламу 1алайкум! Хочу оформить рассрочку.\nТовар: ${formatMoney(parseInt(elPriceInput.value))} руб.\nВзнос: ${formatMoney(dp)} руб.\nСрок: ${elMonthsSlider.value} мес.`;
         window.open(`https://wa.me/79339480095?text=${encodeURIComponent(text)}`, "_blank"); 
     }
 
     function showHalalInfo() {
-        tg.showAlert(currentLang === 'ru' ? "Договор Мубарака.\nМы не выдаем деньги под проценты. Мы выкупаем товар и продаем его вам с фиксированной торговой наценкой. Никаких скрытых комиссий и пеней." : "Мубарака барт.\nОха проценташца ахча ца ло. Оха товар оьций, тӀетоьхна махца шуна духку.");
+        tg.showAlert(currentLang === 'ru' ? "Договор Mubarak.\nМы не выдаем деньги под проценты. Мы выкупаем товар и продаем его вам с фиксированной торговой наценкой. Никаких скрытых комиссий и пеней." : "Mubarak барт.\nОха проценташца ахча ца ло. Оха товар оьций, тӀетоьхна махца шуна духку.");
     }
 
     window.onload = function() {
         updateDpState(); 
-        requestAnimationFrame(updateUI);
+        updateUI();
         calculateFinal(); 
     };
 </script>
